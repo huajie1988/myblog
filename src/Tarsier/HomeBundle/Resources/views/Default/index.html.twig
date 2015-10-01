@@ -1,0 +1,63 @@
+{% extends "TarsierHomeBundle::layout.html.twig" %}
+{% block main %}
+    <div  class="col-md-9">
+        {% if topArticle !=null %}
+        <div class="background-img"  style="border-radius: 6px;{% if topArticle.getFrontCover()|uncp|trim !='' %}background:url('{{ topArticle.getFrontCover()|uncp }}') top center no-repeat;{% else %}background-color: #eee;{% endif %}" >
+            <div class="bg"></div>
+            <div class="jumbotron" >
+                <h1 class="top-title">{{ topArticle.getTitle()|striptags|slice(0, 15) }}</h1>
+                <p class="of_h">{{ topArticle.getContent()|striptags|slice(0, 160) }}</p>
+                <p><a class="btn btn-primary btn-lg mt_15" href="/detail/id/{{ topArticle.getId() }}" role="button">查看详细</a></p>
+            </div>
+        </div>
+        {% endif %}
+        <div class="row">
+            {% if indexArticle !=null %}
+                {% for ia in indexArticle %}
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <a href="/detail/id/{{ ia.getId() }}">
+                        <img data-src="holder.js/100%x200" alt="{{ ia.getTitle() }}" src="{% if ia.getFrontCover()|trim !='' %}{{ ia.getFrontCover()|uncp }}{% endif %}" data-holder-rendered="true" style="height: 200px; width: 100%; display: block;">
+                        </a>
+                        <div class="caption">
+                            <h3>{{ ia.getTitle() }}</h3>
+                            <p class="of_h">{{ ia.getContent()|striptags|slice(0, 40) }}</p>
+                            <p>
+                                <a href="/detail/id/{{ ia.getId() }}" class="btn btn-primary" role="button">查看详细</a>
+                                {#<a href="#" class="btn btn-default" role="button">Button</a>#}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% block private_js %}
+    <script type="text/javascript">
+        var rss_news = $('#rss_news').newsTicker({
+            row_height: 125,
+            max_rows: 3,
+            duration: 4000,
+        });
+        $(document).ready(function(){
+            var height =$('.background-img').height();
+            $('.background-img .bg').height(height)
+        })
+    </script>
+{% endblock %}

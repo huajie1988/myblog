@@ -1,0 +1,117 @@
+{% extends "TarsierHomeBundle::layout.html.twig" %}
+{% block main %}
+    <div  class="col-md-9">
+        <div class="panel panel-default">
+            <!-- Table -->
+            <table class="table table-center">
+                <colgroup>
+                    <col width="25%">
+                    <col width="25%">
+                    <col width="25%">
+                    <col width="25%">
+                </colgroup>
+                <tr>
+                    {# sorting of properties based on query components #}
+                    <td{% if pagination.isSorted('a.sort') %} class="sorted"{% endif %}><span class="glyphicon glyphicon-sort" aria-hidden="true"></span>&nbsp;&nbsp;
+                        <strong>{{ knp_pagination_sortable(pagination, '默认', 'a.sort') }}</strong>
+                    </td>
+                    <td><span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>&nbsp;&nbsp;
+                        <strong>{{ knp_pagination_sortable(pagination, '标题', 'a.title') }}</strong>
+                    </td>
+                    <td><span class="glyphicon glyphicon-hand-up" aria-hidden="true"></span>&nbsp;&nbsp;
+                        <strong>{{ knp_pagination_sortable(pagination, '点击', ['a.click']) }}</strong>
+                    </td>
+                    <td><span class="glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;&nbsp;
+                        <strong>{{ knp_pagination_sortable(pagination, '时间', ['a.create_time']) }}</strong>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    {% for article in pagination %}
+        <div class="media panel panel-default" data-article-id="{{ article.id }}">
+            <div class="media-left media-middle media-list">
+                <a href="/detail/id/{{ article.id }}">
+                    <img class="media-object" data-src="holder.js/172x128" alt="172x128" src="" data-holder-rendered="true">
+                </a>
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading media-heading-top10"><a href="/detail/id/{{ article.id }}">{{ article.title }}</a></h4>
+                <p>{{ article.createTime | date('Y-m-d') }}, {{ article.createTime | date('H:i:s') }}</p>
+                <p>{{ article.content|striptags|slice(0, 160) }}</p>
+            </div>
+        </div>
+    {% endfor %}
+
+        {# display navigation #}
+        <div class="navigation">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block rss %}
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">热门文章</div>
+        <div class="panel-body">
+            {% for ha in hot_article %}
+            <p><a href="/detail/id/{{ ha.id }}">{{ ha['title'] }}</a></p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% block private_js %}
+    <script type="application/javascript">
+        $(document).ready(function(){
+            var ids=new Array()
+            $('.media').each(function(i,e){
+               ids.push($(e).attr('data-article-id'));
+            });
+            ids=ids.sort();
+            ids_str=ids.join(",");
+
+            $.ajax({
+                type: "GET",
+                url: "/list/getArticlePhoto",
+                data: {ids:ids_str},
+                dataType: "json",
+                success: function (data) {
+
+                    if(!data.is_err){
+                        var ret=data.data;
+
+                        for(var i=0;i<ret.length;i++){
+                            var article_id="div[data-article-id="+ret[i]['id']+'] img';
+                            $(article_id).attr('src',ret[i]['photo']);
+                        }
+
+                    }else{
+                        console.log(data.msg);
+                    }
+
+                }
+            });
+
+            console.log(ids)
+
+
+        })
+    </script>
+{% endblock %}

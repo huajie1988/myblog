@@ -1,0 +1,121 @@
+{% extends "TarsierHomeBundle::layout.html.twig" %}
+{% block main %}
+    <div  class="col-md-9">
+        <ol class="breadcrumb">
+            <li><a href="/">Home</a></li>
+            <li>
+                {% for tag in tagsArr %}
+                <a href="{% if tag != 'detail' %}/list/tags/{{ tag }}{% endif %}">{{ tag }}</a>
+                {% endfor %}
+            </li>
+            <li class="active">{{ article.getTitle() }}</li>
+        </ol>
+        <div class="panel panel-default">
+            <div class="panel-body alert-info ft_s">
+                {{ article.getTitle() }}
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <table class="table ">
+                <colgroup>
+                    <col width="25%" />
+                    <col width="25%" />
+                    <col width="25%" />
+                    <col width="25%" />
+                </colgroup>
+               <tbody>
+                    <tr>
+                        <td>
+                            <span class="glyphicon glyphicon-calendar" aria-hidden="true">
+                            </span>
+                            &nbsp;{{ article.getCreateTime()|date('M d, Y h:s') }}
+                        </td>
+                        <td>
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                            &nbsp;{{ article.getUser().getUserName() }}
+                        </td>
+                        <td>&nbsp;</td>
+                        <td><span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
+                            &nbsp;{{ article.getClick() }}人阅读
+                        </td>
+                    </tr>
+               </tbody>
+            </table>
+            <div class="panel-body">
+                {{ article.getContent()|raw }}
+            </div>
+
+            <div class="panel-body">
+                <!-- JiaThis Button BEGIN -->
+                <div class="jiathis_style"><span class="jiathis_txt">分享到：</span>
+                    <a class="jiathis_button_tsina"></a>
+                    <a class="jiathis_button_renren"></a>
+                    <a class="jiathis_button_weixin"></a>
+                    <a class="jiathis_button_fb"></a>
+                    <a class="jiathis_button_twitter"></a>
+                    <a class="jiathis_button_linkedin"></a>
+                    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+                    <a class="jiathis_counter_style"></a>
+                </div>
+                <script type="text/javascript" >
+                    var jiathis_config={
+                        summary:"{{ article.getTitle() }}",
+                        shortUrl:true,
+                        hideMore:false
+                    }
+                </script>
+                <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+                <!-- JiaThis Button END -->
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <!--高速版-->
+                <div id="SOHUCS" sid="{{ sid }}"></div>
+                <script charset="utf-8" type="text/javascript" src="http://changyan.sohu.com/upload/changyan.js" ></script>
+                <script type="text/javascript">
+                    window.changyan.api.config({
+                        appid: 'cys1fglJD',
+                        conf: 'prod_efe25dd14f496de6063374e832949edc'
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block rss %}
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">热门文章</div>
+        <div class="panel-body">
+            {% for ha in hot_article %}
+                <p><a href="/detail/id/{{ ha.id }}">{{ ha['title'] }}</a></p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% block private_js %}
+    <script type="text/javascript">
+        var rss_news = $('#rss_news').newsTicker({
+            row_height: 125,
+            max_rows: 3,
+            duration: 4000,
+        });
+    </script>
+{% endblock %}

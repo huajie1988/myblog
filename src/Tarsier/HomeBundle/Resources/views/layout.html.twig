@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>KumaCore|熊心</title>
+    {% block global_css %}
+    <!-- Bootstrap -->
+    {#要使用stylesheets标签，必须在config.yml的assetic下的bundles里面添加你的bundles#}
+        {% stylesheets
+        '@TarsierHomeBundle/Resources/public/css/bootstrap.min.css'
+        '@TarsierHomeBundle/Resources/public/css/mystyle.css'
+        %}
+    <link href="{{ asset_url }}" rel="stylesheet">
+        {% endstylesheets %}
+    <!-- <link href="css/flat-ui.css" rel="stylesheet"> -->
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    {% endblock %}
+</head>
+<body>
+
+<div class="container-fluid">
+    {% block nav %}
+    <div class="row">
+        <!--         <div id="Layer1" class="col-xs-12" style="position:absolute; z-index:-1">
+                  <img src="http://hiphotos.baidu.com/%CD%C1_%CD%C1_/pic/item/0412cf39fb48950d96ddd806.jpg" style="width:100%" />
+                </div>  -->
+        <div class="col-md-12">
+            <nav class="navbar navbar-default ">
+                <div class="container-fluid">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/">KumaCore</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul id="nav-bar" class="nav navbar-nav">
+                            <li>
+                                <a href="/">
+                                    <b>首页/Home</b>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/list/tags/technology">
+                                    <b>技术/Technology</b> <!-- <span class="sr-only">(current)</span> -->
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/list/tags/food">
+                                    <b>美食/Food</b> <!-- <span class="sr-only">(current)</span> -->
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/list/tags/acg">
+                                    <b>动漫/ACG</b>
+                                </a>
+                            </li>
+                            <li style="display: none;">
+                                <a href="/list/tags/other">
+                                    <b>其他/Other</b>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <form class="navbar-form navbar-left" role="search">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Search for...">
+                        <span class="input-group-btn">
+                          <button class="btn btn-default" type="button">
+                              <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                          </button>
+                        </span>
+                                    </div><!-- /input-group -->
+                                </form>
+                            </li>
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </div><!-- /.container-fluid -->
+            </nav>
+        </div>
+    </div>
+    {% endblock %}
+
+    {% block body %}
+    <div class="row">
+        {% block main %}
+            if you see the line of text,maybe means we have a little problem ╮(╯-╰)╭
+        {% endblock %}
+        {% block side %}
+        <div  class="col-md-3">
+            {% block rss %}
+            <div class="list-group">
+                <ul id="rss_news" class="ul_null">
+                {% for rk,ra in rssArticle %}
+                    <li>
+                    <a href="{{ ra['link'] }}" target="_blank" class="list-group-item " alt="{{ ra['title'] }}">
+                        <h4 class="list-group-item-heading">{{ ra['title']|slice(0, 15) }}</h4>
+                        <p class="list-group-item-text">{{ ra['description']|striptags|slice(0, 50) }}</p>
+                    </a>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+            {% endblock %}
+            {% block labelcal %}
+            <div class="panel panel-default">
+                <div class="panel-heading-white">
+                    <ul class="nav nav-tabs nav-justified">
+                        <li role="presentation" class="panel-tab active"><a href="javascript:void(0);">日历</a></li>
+                        <li role="presentation" class="panel-tab"><a href="javascript:void(0);">标签</a></li>
+                    </ul>
+                </div>
+
+                <table class="table table-center table-cal">
+                    <thead>
+                    <tr>
+                        <th>日</th>
+                        <th>一</th>
+                        <th>二</th>
+                        <th>三</th>
+                        <th>四</th>
+                        <th>五</th>
+                        <th>六</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        {% set wrap_mc=0 %}
+
+                        {% for i in range(0, current_month['firstWeek']) %}
+                            <td>&nbsp;</td>
+                            {% set wrap_mc=wrap_mc+1 %}
+                        {% endfor %}
+
+                        {% for i in range(1, current_month['days']) %}
+                            <td><a href="http://www.todayonhistory.com/{{ current_month['month'] }}/{{ i }}/" target="_blank">{{ i }}</a></td>
+                            {% set wrap_mc=wrap_mc+1 %}
+                            {% if wrap_mc%7 == 0 %}
+                                </tr><tr>
+                            {% endif %}
+                        {% endfor %}
+                        {% set wrap_mc=((wrap_mc/7)|round(0, 'ceil'))*7-wrap_mc-1 %}
+                        {% for i in range(0, wrap_mc) if wrap_mc > 0 %}
+                            <td>&nbsp;</td>
+                        {% endfor %}
+                    </tr>
+                    </tbody>
+
+                </table>
+                <table  style="display: none;" class="table">
+                    <tbody>
+                    <tr>
+                        <td>
+                            <div class="panel-body of_h">
+                                {% for t in tags['tags'] %}
+                                    {% set size = 1 + ( t['click'] - tags['minValue'] )* (2 / tags['spread']) %}
+                                <a href="/list/tags/{{ t['id'] }}" style="font-size: {{ size }}em" >{{ t['name'] }}</a>
+                                {% endfor %}
+
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endblock %}
+            {% block labelfriendlink %}
+            <div class="panel panel-default">
+                <div class="panel-heading-white">
+                    <ul class="nav nav-tabs nav-justified">
+                        <li role="presentation" class="panel-tab active">
+                            <a href="javascript:void(0);">友情链接</a>
+                        </li>
+                        <li role="presentation"  class="panel-tab">
+                            <a href="javascript:void(0);">新浪微博</a>
+                        </li>
+                    </ul>
+                </div>
+                <table class="table table-left">
+                    <tbody>
+                    <tr>
+                        {% for key,fl in friendlink %}
+                        <td>
+                            <a href="{{ fl.getUrl() }}">{{ fl.getTitle() }}</a>
+                        </td>
+                            {% if (key+1)%2==0  %}
+                                </tr><tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    </tbody>
+                </table>
+                <table style="display: none;" class="table">
+                    <tbody>
+                    <tr>
+                        <td>
+                            <a href="http://weibo.com/u/3107316873?s=6uyXnP" target="_blank">
+                                <img style="width: 100%" border="0" src="http://service.t.sina.com.cn/widget/qmd/3107316873/3f2fb334/1.png"/>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endblock %}
+        </div>
+        {% endblock %}
+    </div>
+    {% endblock %}
+</div>
+{% block footer %}
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            版权所有 © 2015-2016 熊心 – huajie1988.com
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block global_js %}
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+    {% javascripts
+    '@TarsierHomeBundle/Resources/public/js/bootstrap.min.js'
+    '@TarsierHomeBundle/Resources/public/js/jquery.newsTicker.min.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+<script type="application/javascript">
+    $('.panel-tab').click(function(){
+        var index=$(this).index();
+        $(this).siblings().removeClass('active');
+        $(this).addClass('active');
+        $(this).closest('.panel').find('table').hide().eq(index).fadeIn();
+    });
+
+    $(document).ready(function(){
+        var nav=new Array('home','technology','food','acg');
+
+        var choose_flag=false;
+        for(var i=0;i<nav.length;i++){
+           if(nav[i].toLowerCase()=='{{ nav_tags }}'){
+               $('#nav-bar li').siblings().removeClass('active').eq(i).addClass('active')
+               choose_flag=true;
+               break;
+           }
+        }
+
+        if(!choose_flag){
+            $('#nav-bar li').siblings().removeClass('active');
+            $('#nav-bar li:last').addClass('active').show();
+        }
+
+    });
+
+</script>
+{% endblock %}
+
+{% block private_js %}
+
+{% endblock %}
+</body>
+</html>

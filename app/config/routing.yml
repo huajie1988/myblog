@@ -1,0 +1,8 @@
+tarsier_home:
+    resource: "@TarsierHomeBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
