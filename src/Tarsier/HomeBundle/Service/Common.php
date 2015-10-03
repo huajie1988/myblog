@@ -23,6 +23,7 @@ class Common {
             'year'=>date('Y',$timestamp),
             'month'=>date('m',$timestamp),
             'days'=>date("t",$timestamp),
+            'day'=>date("d",$timestamp),
             'firstWeek'=>($firstWeek-1>0?$firstWeek-1:0),
         );
 

@@ -149,7 +149,7 @@
                         {% endfor %}
 
                         {% for i in range(1, current_month['days']) %}
-                            <td><a href="http://www.todayonhistory.com/{{ current_month['month'] }}/{{ i }}/" target="_blank">{{ i }}</a></td>
+                            <td {% if i==current_month['day'] %} class="current"{% endif %}><a href="http://www.todayonhistory.com/{{ current_month['month'] }}/{{ i }}/" target="_blank">{{ i }}</a></td>
                             {% set wrap_mc=wrap_mc+1 %}
                             {% if wrap_mc%7 == 0 %}
                                 </tr><tr>
@@ -192,19 +192,23 @@
                         </li>
                     </ul>
                 </div>
-                <table class="table table-left">
-                    <tbody>
+                <table class="table-left table ">
+                    <colgroup>
+                        <col width="50%" />
+                        <col width="50%" />
+                    </colgroup>
+                    <thead>
                     <tr>
                         {% for key,fl in friendlink %}
-                        <td>
+                        <th class="table-left-td">
                             <a href="{{ fl.getUrl() }}">{{ fl.getTitle() }}</a>
-                        </td>
+                        </th>
                             {% if (key+1)%2==0  %}
                                 </tr><tr>
                             {% endif %}
                         {% endfor %}
                     </tr>
-                    </tbody>
+                    </thead>
                 </table>
                 <table style="display: none;" class="table">
                     <tbody>
