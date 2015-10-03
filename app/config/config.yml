@@ -30,7 +30,7 @@ twig:
 assetic:
     debug:          "%kernel.debug%"
     use_controller: false
-    bundles:        [ TarsierHomeBundle ]
+    bundles:        [ TarsierHomeBundle,TarsierAdminBundle  ]
     assets:
         glyphicons_halflings_regular_woff:
           inputs: "@TarsierHomeBundle/Resources/public/fonts/glyphicons-halflings-regular.woff"

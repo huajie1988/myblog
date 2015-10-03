@@ -19,6 +19,7 @@ class AppKernel extends Kernel
             new AppBundle\AppBundle(),
             new Tarsier\HomeBundle\TarsierHomeBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
+            new Tarsier\AdminBundle\TarsierAdminBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
