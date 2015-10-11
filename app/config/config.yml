@@ -38,6 +38,7 @@ assetic:
         glyphicons_halflings_regular_woff2:
           inputs: "@TarsierHomeBundle/Resources/public/fonts/glyphicons-halflings-regular.woff2"
           output: 'fonts/glyphicons-halflings-regular.woff2'
+
     #java: /usr/bin/java
     filters:
         cssrewrite: ~

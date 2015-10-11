@@ -18,6 +18,7 @@ class AppExtension extends \Twig_Extension
             new \Twig_SimpleFilter('price', array($this, 'priceFilter')),
             new \Twig_SimpleFilter('uncp', array($this, 'gzuncompressFilter')),
             new \Twig_SimpleFilter('addBase64ImgHead', array($this, 'addBase64ImgHead')),
+            new \Twig_SimpleFilter('translateStatus', array($this, 'translateStatus')),
         );
     }
 
@@ -41,5 +42,10 @@ class AppExtension extends \Twig_Extension
     {
         return 'app_extension';
     }
+
+    public function translateStatus($status,$statusArr){
+        return isset($statusArr[$status])?$statusArr[$status]:'System unknow';
+    }
+
 
 }

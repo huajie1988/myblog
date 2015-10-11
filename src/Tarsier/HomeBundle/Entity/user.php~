@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class user
  * @package Tarsier\HomeBundle\Entity
@@ -33,6 +34,7 @@ class user{
     protected $username;
     /**
      * @ORM\Column(type="string")
+     * @Assert\Length(min=6,max=30)
      */
     protected $password;
     /**
@@ -49,6 +51,36 @@ class user{
      * @ORM\Column(type="string")
      */
     protected $openid;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    protected $salt;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    protected $token;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    protected $sequence;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    protected $ip;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $rememberme;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    protected $captcha;
 
     /**
      * @OneToOne(targetEntity="userprofile", inversedBy="user")
@@ -247,5 +279,143 @@ class user{
     public function getArticle()
     {
         return $this->article;
+    }
+
+    /**
+     * Set salt
+     *
+     * @param string $salt
+     * @return user
+     */
+    public function setSalt($salt)
+    {
+        $this->salt = $salt;
+
+        return $this;
+    }
+
+    /**
+     * Get salt
+     *
+     * @return string 
+     */
+    public function getSalt()
+    {
+        return $this->salt;
+    }
+
+    /**
+     * Set token
+     *
+     * @param string $token
+     * @return user
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * Get token
+     *
+     * @return string 
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * Set sequence
+     *
+     * @param string $sequence
+     * @return user
+     */
+    public function setSequence($sequence)
+    {
+        $this->sequence = $sequence;
+
+        return $this;
+    }
+
+    /**
+     * Get sequence
+     *
+     * @return string 
+     */
+    public function getSequence()
+    {
+        return $this->sequence;
+    }
+
+    /**
+     * Set ip
+     *
+     * @param string $ip
+     * @return user
+     */
+    public function setIp($ip)
+    {
+        $this->ip = $ip;
+
+        return $this;
+    }
+
+    /**
+     * Get ip
+     *
+     * @return string 
+     */
+    public function getIp()
+    {
+        return $this->ip;
+    }
+
+    /**
+     * Set rememberme
+     *
+     * @param string $rememberme
+     * @return user
+     */
+    public function setRememberme($rememberme)
+    {
+        $this->rememberme = $rememberme;
+
+        return $this;
+    }
+
+    /**
+     * Get rememberme
+     *
+     * @return string
+     */
+    public function getRememberme()
+    {
+        return $this->rememberme;
+    }
+
+    /**
+     * Set captcha
+     *
+     * @param string $captcha
+     * @return user
+     */
+    public function setCaptcha($captcha)
+    {
+        $this->captcha = $captcha;
+
+        return $this;
+    }
+
+    /**
+     * Get captcha
+     *
+     * @return string
+     */
+    public function getCaptcha()
+    {
+        return $this->captcha;
     }
 }

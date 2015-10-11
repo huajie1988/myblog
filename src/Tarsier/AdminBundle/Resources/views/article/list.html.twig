@@ -1,0 +1,70 @@
+{% extends "TarsierAdminBundle::layout.html.twig" %}
+
+{% block main %}
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Article List</div>
+        <div class="panel-body">
+            <a href="/article/add">
+                <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Add New</button>
+            </a>
+        </div>
+        <table class="table table-center">
+            <colgroup>
+                <col width="20%">
+                <col width="20%">
+                <col width="20%">
+                <col width="20%">
+                <col width="20%">
+            </colgroup>
+            <tr>
+                {# sorting of properties based on query components #}
+                <td{% if pagination.isSorted('a.sort') %} class="sorted"{% endif %}><span class="glyphicon glyphicon-sort" aria-hidden="true"></span>&nbsp;&nbsp;
+                    <strong>{{ knp_pagination_sortable(pagination, 'Sort', 'a.sort') }}</strong>
+                </td>
+                <td><span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>&nbsp;&nbsp;
+                    <strong>{{ knp_pagination_sortable(pagination, 'Title', 'a.title') }}</strong>
+                </td>
+                <td><span class="glyphicon glyphicon-sort-by-order" aria-hidden="true"></span>&nbsp;&nbsp;
+                    <strong>{{ knp_pagination_sortable(pagination, 'Status', 'a.status') }}</strong>
+                </td>
+                <td><span class="glyphicon glyphicon-hand-up" aria-hidden="true"></span>&nbsp;&nbsp;
+                    <strong>{{ knp_pagination_sortable(pagination, 'Click', ['a.click']) }}</strong>
+                </td>
+                <td><span class="glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;&nbsp;
+                    <strong>{{ knp_pagination_sortable(pagination, 'Create Time', ['a.create_time']) }}</strong>
+                </td>
+            </tr>
+        </table>
+        <table class="table">
+            <thead>
+
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Create Time</th>
+                <th>Operating</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for article in pagination %}
+            <tr>
+                <th scope="row">{{ article.id }}</th>
+                <td><a href="/detail/id/{{ article.id }}">{{ article.title }}</a></td>
+                <td>{{ article.status|translateStatus(['draft','release','delete']) }}</td>
+                <td>{{ article.createTime | date('Y-m-d') }}, {{ article.createTime | date('H:i:s') }}</td>
+                <td>
+                    <a href="/article/edit/id/{{ article.id }}">
+                        <button class="btn btn-primary" type="submit">&nbsp;&nbsp;Edit&nbsp;&nbsp;</button>
+                    </a>
+                    <a href="/article/delete/id/{{ article.id }}">
+                        <button class="btn btn-danger" type="submit">Delete</button>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

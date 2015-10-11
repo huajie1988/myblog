@@ -31,5 +31,27 @@ class Common {
 
     }
 
+    public function createRandStr($num=6){
+        $string="qwertyuioplkjhgfdsazxcvbnm0987654321ZXCVBNMLKJHGFDSAQWERTYUIOP!@#$%";
+
+        $code='';
+
+        for($i=0;$i<$num;$i++){
+            $code[]=$string[mt_rand(0,strlen($string)-1)];
+        }
+
+        $code=join('',$code);
+
+        return $code;
+
+    }
+
+    public static function addBase64ImgHead($img,$img_type='jpg',$auto=true){
+
+        if($auto)
+            $img_type="image/$img_type";
+
+        return "data:$img_type;base64,".$img;
+    }
 
 }

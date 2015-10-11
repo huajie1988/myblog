@@ -30,7 +30,6 @@
 <div class="container">
     <h2 class="form-signin-heading t_c">Please sign in</h2>
     {{ form(login_form) }}
-
 </div> <!-- /container -->
 {% block global_js %}
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -45,6 +44,17 @@
 {% endblock %}
 
 {% block private_js %}
+
+    <script type="application/javascript">
+
+        $(document).ready(function(){
+
+            html="<div><img id='captcha_img' src='"+"{{ captcha_img }}"+"' /></div>";
+
+            $('#form_captcha').closest('div').before(html);
+        })
+
+    </script>
 
 {% endblock %}
 </body>

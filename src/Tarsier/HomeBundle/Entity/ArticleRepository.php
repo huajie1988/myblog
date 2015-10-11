@@ -16,7 +16,7 @@ class ArticleRepository extends EntityRepository
     public function findTopArticle()
     {
         return $this->getEntityManager()
-            ->createQuery('SELECT a FROM TarsierHomeBundle:article a ORDER BY a.top DESC,a.id DESC')
+            ->createQuery('SELECT a FROM TarsierHomeBundle:article a WHERE a.status=1 ORDER BY a.top DESC,a.id DESC')
             ->setMaxResults(1)
             ->getResult();
     }
@@ -24,7 +24,7 @@ class ArticleRepository extends EntityRepository
     public function findIndexArticle($id,$nums=3)
     {
         return $this->getEntityManager()
-            ->createQuery('SELECT a FROM TarsierHomeBundle:article a WHERE a.id <> :id ORDER BY a.top DESC,a.id DESC')
+            ->createQuery('SELECT a FROM TarsierHomeBundle:article a WHERE a.id <> :id AND a.status=1 ORDER BY a.top DESC,a.id DESC')
             ->setParameters(array('id'=>$id))
             ->setMaxResults($nums)
             ->getResult();
@@ -33,7 +33,7 @@ class ArticleRepository extends EntityRepository
     public function getHotArticle($limit=10){
         $dql=$this->getEntityManager()
             ->createQueryBuilder()
-            ->select('a.title,a.id')
+            ->select('a.title,a.id,a.create_time,a.click')
             ->from('TarsierHomeBundle:article','a')
             ->where("a.status=:status")
             ->orderBy('a.click','DESC')
@@ -45,5 +45,12 @@ class ArticleRepository extends EntityRepository
             ->setMaxResults(intval($limit))
             ->getResult();
     }
+
+    public function findAllArticle(){
+        $dql="SELECT a FROM TarsierHomeBundle:article a ORDER BY a.id DESC";
+        $query=$this->getEntityManager()->createQuery($dql);
+        return $query;
+    }
+
 
 }

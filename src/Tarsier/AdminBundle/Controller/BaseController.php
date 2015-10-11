@@ -18,7 +18,7 @@ class BaseController extends Controller
 
     public function getRepository($table='user',$db='',$bundle='TarsierHomeBundle'){
         $className=$bundle.':'.$table;
-        return $this->getEm()->getRepository($className);
+        return $this->getEm($db)->getRepository($className);
     }
 
     public function getUserRepository(){
@@ -30,7 +30,7 @@ class BaseController extends Controller
     }
 
     public function getArticleImgRepository(){
-        return $this->getRepository('articleimg','sqlit');
+        return $this->getRepository('articleimg','sqlite');
     }
 
     public function getTagsRepository(){

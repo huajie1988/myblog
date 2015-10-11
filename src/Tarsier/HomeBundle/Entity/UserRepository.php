@@ -12,4 +12,30 @@ use Doctrine\ORM\EntityRepository;
  */
 class UserRepository extends EntityRepository
 {
+    public function checkUserValid($username,$password){
+      $dql =  $this->getEntityManager()
+          ->createQueryBuilder()
+          ->select('u.id,u.username,u.password,u.salt')
+          ->from('TarsierHomeBundle:user','u')
+          ->where("u.username=:username")
+          ->getDQL();
+
+     $ret = $this->getEntityManager()
+         ->createQuery($dql)
+          ->setParameter("username",$username)
+          ->setMaxResults(1)
+          ->getResult();
+
+
+     if(empty($ret))
+         return false;
+
+     $ret=$ret[0];
+
+     if(md5($password.$ret['salt'])==$ret['password'])
+         return true;
+
+     return false;
+    }
+
 }
