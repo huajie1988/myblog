@@ -52,7 +52,43 @@
             html="<div><img id='captcha_img' src='"+"{{ captcha_img }}"+"' /></div>";
 
             $('#form_captcha').closest('div').before(html);
+
         })
+
+        var STOP_SECOND=3000;
+
+        var timer_count=0;
+        var timer_stop;
+
+
+        function scanningLogin() {
+            $.ajax({
+                type: "GET",
+                url: "/admin/scanningLogin",
+                data: {},
+                dataType: "json",
+                success: function(data){
+                    timer_count++;
+                    if(timer_count<=STOP_SECOND){
+
+                        if(data.status==404){
+                            timer_stop=setTimeout(scanningLogin(),1000);
+                        }else{
+                            $('#form_captcha').val(data.captcha)
+                            $('#form-signin').submit();
+                        }
+                    }else{
+                        $('#captcha_img').parent('div').append("<label>Sorry,It's time out</label>");
+                        $('#captcha_img').remove();
+                        clearTimeout(timer_stop);
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function(){
+            scanningLogin();
+        });
 
     </script>
 

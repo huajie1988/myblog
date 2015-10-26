@@ -21,7 +21,7 @@ use Doctrine\ORM\Mapping\JoinTable;
  * Class user
  * @package Tarsier\HomeBundle\Entity
  * @ORM\Entity(repositoryClass="ArticleRepository")
- * @ORM\Table(name="Article")
+ * @ORM\Table(name="article")
  */
 class article{
     /**

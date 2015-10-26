@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
  * Class user
  * @package Tarsier\HomeBundle\Entity
  * @ORM\Entity(repositoryClass="TagsRepository")
- * @ORM\Table(name="Tags")
+ * @ORM\Table(name="tags")
  */
 class tags{
     /**

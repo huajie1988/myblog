@@ -10,14 +10,21 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tarsier\HomeBundle\Entity\article;
 use Tarsier\HomeBundle\Entity\articleimg;
+use Tarsier\HomeBundle\Entity\qrrecord;
 use Tarsier\HomeBundle\Entity\tags;
 use Tarsier\HomeBundle\Entity\user;
 use Doctrine\Common\Util\Debug;
 use Tarsier\HomeBundle\Service\Common;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Tarsier\HomeBundle\Service\QRcode;
+use Tarsier\HomeBundle\Service\QRencode;
+
 class DefaultController extends BaseController
 {
+
+    private $qrcode_url="http://qr.liantu.com/api.php?text=";
+
 
     /**
      * @Route("/admin/index",name="adminindex")
@@ -28,7 +35,7 @@ class DefaultController extends BaseController
         if(!$this->isLogin())
             return $this->redirect($this->generateUrl('adminlogin'));
 
-        $ret = $this->get("database_connection")->fetchAll("SELECT COUNT(*) as nums,status FROM `article` a GROUP BY a.status;");
+        $ret = $this->get("database_connection")->fetchAll("SELECT COUNT(*) as nums,status FROM `Article` a GROUP BY a.status;");
 
         $article_status=[
             'draft'=>0,
@@ -71,6 +78,8 @@ class DefaultController extends BaseController
     public function loginAction()
     {
 
+        $this->qrcode_url="http://".$_SERVER['SERVER_NAME']."/admin/qrcodeService?text=";
+
         if($this->isLogin())
             return $this->redirect($this->generateUrl('adminindex'));
 
@@ -87,16 +96,20 @@ class DefaultController extends BaseController
 
         $form->handleRequest($this->getRequest());
 
+//        include $_SERVER["DOCUMENT_ROOT"]."/src/Tarsier/HomeBundle/Service/Phpqrcode.php";
+
         if($form->isValid()){
 
             $ret_form=$this->getRequest()->get('form');
 
             $code=$session=$this->getRequest()->getSession()->get('captcha');
+            $uid = $this->getRequest()->getSession()->get('uid');
 
             if($ret_form['captcha']!=$code){
                 $error=new FormError('The Captcha is not right!');
                 $form->addError($error);
-                $captcha_img='data:image/png;base64,'.base64_encode(file_get_contents("http://qrcoder.sinaapp.com?t=$code"));
+                $text=urlencode("http://".$_SERVER['SERVER_NAME']."/admin/scanningLoginAuto?uid=$uid&code=$code") ;
+                $captcha_img='data:image/png;base64,'.base64_encode(file_get_contents($this->qrcode_url.$text));
 
                 return [
                     'login_form'=>$form->createView(),
@@ -109,7 +122,8 @@ class DefaultController extends BaseController
             if(!$user_em->checkUserValid($ret_form['username'],$ret_form['password'])){
                 $error=new FormError('Username or password is error!');
                 $form->addError($error);
-                $captcha_img='data:image/png;base64,'.base64_encode(file_get_contents("http://qrcoder.sinaapp.com?t=$code"));
+                $text=urlencode("http://".$_SERVER['SERVER_NAME']."/admin/scanningLoginAuto?uid=$uid&code=$code") ;
+                $captcha_img='data:image/png;base64,'.base64_encode(file_get_contents($this->qrcode_url.$text));
 
                 return [
                     'login_form'=>$form->createView(),
@@ -145,12 +159,15 @@ class DefaultController extends BaseController
 
 
         $code=$c->createRandStr();
-
+        $uid=uniqid('lg_');
         $session=$this->getRequest()->getSession();
 
         $session->set('captcha',$code);
+        $session->set('uid',$uid);
 
-        $captcha_img='data:image/png;base64,'.base64_encode(file_get_contents("http://qrcoder.sinaapp.com?t=$code"));
+        $text=urlencode("http://".$_SERVER['SERVER_NAME']."/admin/scanningLoginAuto?uid=$uid&code=$code") ;
+        $captcha_img='data:image/png;base64,'.base64_encode(file_get_contents($this->qrcode_url.$text));
+
 
         $data=[
             'login_form'=>$form->createView(),
@@ -475,6 +492,54 @@ class DefaultController extends BaseController
         return $data;
     }
 
+    /**
+     * @Route("/admin/scanningLogin",name="adminScanningLogin")
+     * @Template()
+     */
+
+    public function scanningLoginPollAction(){
+        $uid=$this->getRequest()->getSession()->get('uid');
+        $captcha=$this->getRequest()->getSession()->get('captcha');
+
+        $record = $this->getQrRecordRepository()->findOneBy(['uid'=>$uid,'code'=>$captcha]);
+
+        if(!empty($record)){
+            $sem=$this->getEm('sqlite');
+            $sem->remove($record);
+            $sem->flush();
+            echo json_encode(['status'=>200,'captcha'=>$captcha]);
+        }else{
+            echo json_encode(['status'=>404]);
+        }
+        exit();
+    }
+
+    /**
+     * @Route("/admin/scanningLoginAuto",name="adminScanningLoginauto")
+     * @Template()
+     */
+
+    public function scanningLoginAction(){
+        $uid=$this->getRequest()->get('uid');
+        $code=$this->getRequest()->get('code');
+        $record = $this->getQrRecordRepository()->findOneBy(['uid'=>$uid,'code'=>$code]);
+
+        if(empty($record)){
+
+            $sem=$this->getEm('sqlite');
+            $qr_record= new qrrecord();
+            $qr_record->setUid($uid);
+            $qr_record->setCode($code);
+            $sem->persist($qr_record);
+            $sem->flush();
+
+            echo json_encode(['status'=>200]);
+        }else{
+            echo json_encode(['status'=>404]);
+        }
+        exit();
+    }
+
     private function isLogin(){
         if($this->getRequest()->cookies->get('userName')==null)
             return false;
@@ -482,6 +547,17 @@ class DefaultController extends BaseController
             $ret = $this->getUserRepository()->findOneBy(['username'=>$this->getRequest()->cookies->get('userName'),'token'=>$this->getRequest()->cookies->get('token')]);
             return empty($ret)?false:true;
         }
+    }
+
+    /**
+     * @Route("/admin/qrcodeService",name="adminQrcodeService")
+     * @Template()
+     */
+
+    public function QRCodeServiceAction(){
+        $text=$this->getRequest()->get('text');
+        QRcode::png($text,false,3,16,2);
+        exit;
     }
 
 }

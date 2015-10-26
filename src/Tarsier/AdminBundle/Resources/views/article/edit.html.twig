@@ -10,9 +10,8 @@
 {% endblock %}
 {% block private_js %}
     {% javascripts
-    '@TarsierAdminBundle/Resources/public/js/tinymce/jquery.tinymce.min.js'
-    '@TarsierAdminBundle/Resources/public/js/tinymce/tinymce.min.js'
-    output='bundles/tarsieradmin/js/tinymce/*.js'
+    '@TarsierAdminBundle/Resources/public/js/tinymce/*.js'
+    output='bundles/tarsieradmin/js/tinymce/*.min.js'
     %}
     <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

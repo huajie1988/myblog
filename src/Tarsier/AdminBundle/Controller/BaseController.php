@@ -45,4 +45,8 @@ class BaseController extends Controller
         return $this->getRepository('friendlink');
     }
 
+    public function getQrRecordRepository(){
+        return $this->getRepository('qrrecord','sqlite');
+    }
+
 }

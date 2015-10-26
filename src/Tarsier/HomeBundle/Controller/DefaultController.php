@@ -10,7 +10,7 @@ use Tarsier\HomeBundle\Entity\user;
 use Tarsier\HomeBundle\Entity\article;
 use Tarsier\HomeBundle\Entity\userprofile;
 use Tarsier\HomeBundle\Service\Common;
-use Tarsier\HomeBundle\Service\rssReader;
+use Tarsier\HomeBundle\Service\RssReader;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
@@ -201,7 +201,7 @@ class DefaultController extends Controller
             $rss_article=unserialize($rss[$rand]->getContent());
         }else{
             $url=isset($rss[$rand])?$rss[$rand]->getUrl():'http://news.ifeng.com/rss/index.xml';
-            $rssReader=new rssReader($url);
+            $rssReader=new RssReader($url);
             $rss_article=$rssReader->run();
 
             $rss[$rand]->setLastTime(time());
