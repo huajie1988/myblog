@@ -15,7 +15,7 @@
             {% if indexArticle !=null %}
                 {% for ia in indexArticle %}
                 <div class="col-sm-6 col-md-4">
-                    <div class="thumbnail">
+                    <div class="thumbnail thumb_min_height">
                         <a href="/detail/id/{{ ia.getId() }}">
                         <img data-src="holder.js/100%x200" alt="{{ ia.getTitle() }}" src="{% if ia.getFrontCover()|trim !='' %}{{ ia.getFrontCover()|uncp }}{% endif %}" data-holder-rendered="true" style="height: 200px; width: 100%; display: block;">
                         </a>
