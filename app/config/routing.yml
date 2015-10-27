@@ -8,6 +8,3 @@ tarsier_home:
     type:     annotation
     prefix:   /
 
-app:
-    resource: "@AppBundle/Controller/"
-    type:     annotation

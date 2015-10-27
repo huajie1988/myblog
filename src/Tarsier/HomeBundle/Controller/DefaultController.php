@@ -20,7 +20,7 @@ class DefaultController extends Controller
     private $nav_arr=['home','technology','food','acg'];
 
     /**
-     * @Route("/")
+     * @Route("/",name="indexPage")
      * @Template()
      */
     public function indexAction()

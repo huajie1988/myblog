@@ -471,6 +471,10 @@ class DefaultController extends BaseController
             $articleimg_em=$this->getArticleImgRepository();
 
             $articleimg=$articleimg_em->findOneBy(['article_id'=>$article->getId()]);
+
+            if ($articleimg == null)
+                $articleimg = new articleimg();
+
             $articleimg->setFrontCover($front_cover);
             $articleimg->setThumb($thumb);
             $articleimg->setArticleId($article->getId());
