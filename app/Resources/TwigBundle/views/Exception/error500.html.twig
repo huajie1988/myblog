@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
 
-    <title>あのう,お探しの情報は見つかりませんでした。 KumaCore|熊心</title>
+    <title>瞧，我发现了什么？noooooooooooooooooooooooo!。 KumaCore|熊心</title>
 
     <!-- Bootstrap core CSS -->
     <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
@@ -21,19 +21,16 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12" style="height: 100%; margin-top:20px;">
-            <div class="jumbotron" style="background:url({{ asset('bundles/tarsierhome/images/404.jpg') }}) top center no-repeat;height: 100%;">
-                <div style="position: fixed;bottom: 30px;color:#678CBC;text-align:center;width:100%">
-                    <h1>404 NOT PAGE FOUND</h1>
-                    <p><strong>迷路了吗？</strong></p>
-                    <p><strong>点击下面的按钮就能回去了哦！</strong></p>
-                    <p><a class="btn btn-primary btn-lg" href="{{ path('indexPage') }}" role="button">返回首页</a></p>
-                </div>
-            </div>
+            <img src="{{ asset('bundles/tarsierhome/images/500.jpg') }}" style="width:100%;"/>
+            <div style="position: fixed;bottom: 60px;color:#678CBC;text-align:center;width:100%">
+                <h1 style="font-size:4em">{{ status_code }} {{ status_text  }}</h1>
+                <p style="font-size:2em"><strong>我想你知道的太多了<_<</strong></p>
 
+                <p><a class="btn btn-primary btn-lg" href="{{ path('indexPage') }}" role="button">返回首页</a></p>
+            </div>
         </div>
     </div>
 </div>
-
 
 <!-- Bootstrap core JavaScript
 ================================================== -->

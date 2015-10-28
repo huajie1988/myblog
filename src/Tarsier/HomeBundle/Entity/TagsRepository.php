@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityRepository;
 class TagsRepository extends EntityRepository
 {
     public function getArticleByName($nav_tags){
-        $dql="select a,t from TarsierHomeBundle:article a LEFT JOIN a.tag t where t.name='$nav_tags' ORDER BY a.sort DESC";
+        $dql="select a,t from TarsierHomeBundle:article a LEFT JOIN a.tag t where t.name='$nav_tags' AND a.status=1 ORDER BY a.sort DESC";
         $query=$this->getEntityManager()->createQuery($dql);
         return $query;
     }

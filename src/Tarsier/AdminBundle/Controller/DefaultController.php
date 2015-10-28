@@ -254,7 +254,8 @@ class DefaultController extends BaseController
             $front_cover='';
             if($form->get('front_cover')->getData()!=null){
                 $front_cover_path=$form->get('front_cover')->getData()->getPathName();
-                $front_cover=base64_encode(file_get_contents($front_cover_path));
+                $front_cover_str=file_get_contents($front_cover_path);
+                $front_cover=base64_encode($front_cover_str);
                 $front_cover= Common::addBase64ImgHead($front_cover,'png');
             }
 
@@ -262,7 +263,7 @@ class DefaultController extends BaseController
 
             $thumb='';
             if($form->get('front_cover')->getData()!=null && $form->get('thumb')->getData()== null){
-                $src=imagecreatefrompng($front_cover_path);
+                $src=imagecreatefromstring($front_cover_str);
                 $size_src=getimagesize($front_cover_path);
                 $w=$size_src['0'];
                 $h=$size_src['1'];
@@ -306,10 +307,14 @@ class DefaultController extends BaseController
                 if(empty($tag)){
                     $tag =new tags();
                     $tag->setName($t);
-                    $tag->setClick(0);
-                    $em->persist($tag);
-                    $em->flush();
+                    $tag->setClick(1);
+                }else{
+                    $tag->setClick(count($tag->getArticle())+1);
                 }
+
+                $em->persist($tag);
+                $em->flush();
+
                 $tags_list[]=$tag;
             }
 
@@ -350,6 +355,7 @@ class DefaultController extends BaseController
             'save_form'=>$form->createView(),
             'userName'=>$userName,
             'nav'=>'article',
+            'id'=>0,
         ];
 
         return $data;
@@ -396,7 +402,6 @@ class DefaultController extends BaseController
 
         if($form->isValid()) {
             $article->setTag([]);
-
             $front_cover='';
             if($form->get('front_cover')->getData()!=null){
                 $front_cover_path=$form->get('front_cover')->getData()->getPathName();
@@ -454,10 +459,14 @@ class DefaultController extends BaseController
                 if(empty($tag)){
                     $tag =new tags();
                     $tag->setName($t);
-                    $tag->setClick(0);
-                    $em->persist($tag);
-                    $em->flush();
+                    $tag->setClick(1);
+                }else{
+                    $tag->setClick(count($tag->getArticle())+1);
                 }
+
+                $em->persist($tag);
+                $em->flush();
+
                 $tags_list[]=$tag;
             }
 
@@ -475,8 +484,15 @@ class DefaultController extends BaseController
             if ($articleimg == null)
                 $articleimg = new articleimg();
 
-            $articleimg->setFrontCover($front_cover);
-            $articleimg->setThumb($thumb);
+            $frontcover_replace= $this->getRequest()->get('frontcover_replace');
+            $thumb_replace= $this->getRequest()->get('thumb_replace');
+
+            if($frontcover_replace==1)
+                $articleimg->setFrontCover($front_cover);
+
+            if($thumb_replace==1)
+                $articleimg->setThumb($thumb);
+
             $articleimg->setArticleId($article->getId());
             $sem->persist($articleimg);
             $sem->flush();
@@ -491,6 +507,7 @@ class DefaultController extends BaseController
             'save_form'=>$form->createView(),
             'userName'=>$userName,
             'nav'=>'article',
+            'id'=>$article->getId(),
         ];
 
         return $data;

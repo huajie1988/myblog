@@ -70,15 +70,26 @@
         </div>
         <div class="panel panel-default">
             <div class="panel-body">
-                <!--高速版-->
-                <div id="SOHUCS" sid="{{ sid }}"></div>
-                <script charset="utf-8" type="text/javascript" src="http://changyan.sohu.com/upload/changyan.js" ></script>
-                <script type="text/javascript">
-                    window.changyan.api.config({
-                        appid: 'cys1fglJD',
-                        conf: 'prod_efe25dd14f496de6063374e832949edc'
-                    });
-                </script>
+
+                {% if is_mobile %}
+                    <div id="SOHUCS" sid="{{ sid }}"></div>
+                    <script id="changyan_mobile_js" charset="utf-8" type="text/javascript"
+                            src="http://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=cys1fglJD&conf=prod_efe25dd14f496de6063374e832949edc">
+                    </script>
+
+                {% else %}
+
+                    <!--高速版-->
+                    <div id="SOHUCS" sid="{{ sid }}"></div>
+                    <script charset="utf-8" type="text/javascript" src="http://changyan.sohu.com/upload/changyan.js" ></script>
+                    <script type="text/javascript">
+                        window.changyan.api.config({
+                            appid: 'cys1fglJD',
+                            conf: 'prod_efe25dd14f496de6063374e832949edc'
+                        });
+                    </script>
+
+                {% endif %}
             </div>
         </div>
     </div>

@@ -88,6 +88,9 @@ class DefaultController extends Controller
 
         $data['article']=$article;
 
+        if($this->getRequest()->cookies->get('userName')==null)
+            return $this->redirect($this->generateUrl('indexPage'));
+
         $tagsArr=[];
 
         foreach ($article->getTag() as $tag) {
@@ -114,6 +117,7 @@ class DefaultController extends Controller
         $data['nav_tags']=current($nav_tags);//导航栏
         $data['hot_article']=$hot_article;//导航栏
         $data['friendlink']=$this->getFriendLink();
+        $data['is_mobile']=$this->isMobile();
         $em=$this->getDoctrine()->getManager();
         $article->setClick($article->getClick()+1);
         $em->persist($article);
@@ -266,9 +270,14 @@ class DefaultController extends Controller
 
         $articleImgs=$sem->getRepository('TarsierHomeBundle:articleimg')->getArticleImgByArticleIds($ids);
 
+        if(empty($articleImgs)){
+            echo json_encode(['is_err'=>true,'msg'=>"Don't Find Image"]);
+            exit;
+        }
+
         $photos=[];
         foreach ($articleImgs as $articleImg) {
-            if(strtolower($type)=='frontCover')
+            if(strtolower($type)=='frontcover')
                 $photo=$articleImg->getFrontCover();
             else
                 $photo=$articleImg->getThumb();
@@ -288,5 +297,24 @@ class DefaultController extends Controller
             ->getRepository('TarsierHomeBundle:friendlink')
             ->findBy(['status'=>1],['sort'=>'DESC']);
     }
+
+    private function isMobile(){
+        $ua=$_SERVER['HTTP_USER_AGENT'];
+        $agents = ["Android", "iPhone","SymbianOS", "Windows Phone", "iPad", "iPod"];
+
+        $flag = false;
+
+        foreach ($agents as $a) {
+            if (strstr($ua,$a)!==false) {
+                $flag = true;
+                break;
+            }
+        }
+
+
+        return $flag;
+
+    }
+
 
 }

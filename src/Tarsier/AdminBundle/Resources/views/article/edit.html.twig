@@ -15,7 +15,8 @@
     %}
     <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
-    <script>tinymce.init({
+    <script>
+        tinymce.init({
             selector:'textarea',
             plugins: [
                 "advlist autolink lists link image charmap print preview anchor",
@@ -28,5 +29,41 @@
             max_height: 300,
             min_height: 160,
             height : 250
-        });</script>
+        });
+
+        $(document).ready(function(){
+            $('#form_front_cover').before("<div style='display:none;' ><span class='glyphicon glyphicon-remove fr' aria-hidden='true' onclick='deletePhoto(this)'></span><img src='' id='frontcover_photo' class='frontcover_photo' /><input type='hidden' id='frontcover_replace' name='frontcover_replace' value='1'></div>");
+            $('#form_thumb').before("<div style='display:none;' ><span class='glyphicon glyphicon-remove fr' aria-hidden='true' onclick='deletePhoto(this)'></span><img src='' id='thumb_photo' class='thumb_photo' /><input type='hidden' id='thumb_replace' name='thumb_replace' value='1'></div>");
+            getImage('frontcover');
+            getImage('thumb');
+        });
+
+        function getImage(type){
+            $.ajax({
+                type: "GET",
+                url: "/list/getArticlePhoto",
+                data: {ids:{{ id }},type:type},
+                dataType: "json",
+                success: function (data) {
+
+                    if(!data.is_err && data.data[0]['photo']!=undefined && data.data[0]['photo']!='' && data.data[0]['photo']!=null){
+                        id="#"+type+"_photo"
+                        $(id).attr('src',data.data[0]['photo']).closest('div').show();
+                        id2="#"+type+"_replace"
+                        $(id2).val(0);
+                        console.log(data.data[0]['photo']);
+                    }else{
+                        console.log(data.msg);
+                    }
+
+                }
+            });
+        }
+
+        function deletePhoto(o){
+            $(o).closest('div').fadeOut();
+            $(o).closest('div').find('input').val(1);
+        }
+
+    </script>
 {% endblock %}

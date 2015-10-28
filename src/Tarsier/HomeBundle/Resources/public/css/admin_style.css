@@ -164,3 +164,17 @@ body {
 .form-save-btn{
     margin-top: 10px;
 }
+
+.frontcover_photo{
+    height: 300px;
+    margin: 10px 10px;
+}
+
+.thumb_photo{
+    width: 300px;
+    margin: 10px 10px;
+}
+
+.fr{
+    float: right;
+}
