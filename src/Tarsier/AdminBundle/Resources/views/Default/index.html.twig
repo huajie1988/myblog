@@ -63,7 +63,7 @@
                 <tr>
                     <td>{{ key+1 }}</td>
                     <td><a href="/detail/id/{{ ha.id }}" target="_blank">{{ ha.title }}</a></td>
-                    <td>{{ ha.create_time }}</td>
+                    <td>{{ ha.create_time|date('M d, Y h:s') }}</td>
                     <td>{{ ha.click }}</td>
                 </tr>
                 {% endfor %}
