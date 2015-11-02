@@ -224,7 +224,7 @@ class user{
      * @param \Tarsier\HomeBundle\Entity\userprofile $profile
      * @return user
      */
-    public function setProfile(\Tarsier\HomeBundle\Entity\userprofile $profile = null)
+    public function setProfile($profile = null)
     {
         $this->profile = $profile;
 
@@ -418,4 +418,68 @@ class user{
     {
         return $this->captcha;
     }
+
+    /**
+     * Get moon
+     *
+     * @return string
+     */
+    public function getMoon(){
+        return $this->getProfile()->getMoon();
+    }
+
+    /**
+     * Get age
+     *
+     * @return string
+     */
+    public function getAge(){
+        return $this->getProfile()->getAge();
+    }
+
+    /**
+     * Get sex
+     *
+     * @return string
+     */
+    public function getSex(){
+        return $this->getProfile()->getSex();
+    }
+
+
+    /**
+     * Set moon
+     *
+     * @param string $moon
+     * @return user
+     */
+    public function setMoon($moon){
+        $this->getProfile()->setMoon($moon);
+
+        return $this;
+    }
+
+    /**
+     * Set age
+     *
+     * @param string $age
+     * @return user
+     */
+    public function setAge($age){
+        $this->getProfile()->setAge($age);
+
+        return $this;
+    }
+
+    /**
+     * Set sex
+     *
+     * @param string $sex
+     * @return user
+     */
+    public function setSex($sex){
+        $this->getProfile()->setSex($sex);
+        return $this;
+    }
+
 }

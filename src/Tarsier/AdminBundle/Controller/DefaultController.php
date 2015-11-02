@@ -14,6 +14,7 @@ use Tarsier\HomeBundle\Entity\qrrecord;
 use Tarsier\HomeBundle\Entity\tags;
 use Tarsier\HomeBundle\Entity\user;
 use Doctrine\Common\Util\Debug;
+use Tarsier\HomeBundle\Entity\userprofile;
 use Tarsier\HomeBundle\Service\Common;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -251,45 +252,9 @@ class DefaultController extends BaseController
 
         if($form->isValid()) {
 
-            $front_cover='';
-            if($form->get('front_cover')->getData()!=null){
-                $front_cover_path=$form->get('front_cover')->getData()->getPathName();
-                $front_cover_str=file_get_contents($front_cover_path);
-                $front_cover=base64_encode($front_cover_str);
-                $front_cover= Common::addBase64ImgHead($front_cover,'png');
-            }
-
-
-
-            $thumb='';
-            if($form->get('front_cover')->getData()!=null && $form->get('thumb')->getData()== null){
-                $src=imagecreatefromstring($front_cover_str);
-                $size_src=getimagesize($front_cover_path);
-                $w=$size_src['0'];
-                $h=$size_src['1'];
-                $max=300;
-                if($w > $h){
-                    $w=$max;
-                    $h=$h*($max/$size_src['0']);
-                }else{
-                    $h=$max;
-                    $w=$w*($max/$size_src['1']);
-                }
-                $image=imagecreatetruecolor($w, $h);
-                imagecopyresampled($image, $src, 0, 0, 0, 0, $w, $h, $size_src['0'], $size_src['1']);
-                ob_start();
-                imagepng($image);
-                // Capture the output
-                $imagedata = ob_get_contents();
-                // Clear the output buffer
-                ob_end_clean();
-                $thumb= Common::addBase64ImgHead(base64_encode($imagedata),'png');
-
-            }elseif($form->get('thumb')->getData()!= null){
-                $thumb=$form->get('thumb')->getData()->getPathName();
-                $thumb=base64_encode(file_get_contents($thumb));
-                $thumb= Common::addBase64ImgHead($thumb,'png');
-            }
+            $photo=$this->dealPhotoProcess($form->get('front_cover')->getData(),$form->get('thumb')->getData());
+            $front_cover=$photo['front_cover'];
+            $thumb=$photo['thumb'];
 
 
             $em=$this->getEm();
@@ -402,45 +367,10 @@ class DefaultController extends BaseController
 
         if($form->isValid()) {
             $article->setTag([]);
-            $front_cover='';
-            if($form->get('front_cover')->getData()!=null){
-                $front_cover_path=$form->get('front_cover')->getData()->getPathName();
-                $front_cover_str=file_get_contents($front_cover_path);
-                $front_cover=base64_encode($front_cover_str);
-                $front_cover= Common::addBase64ImgHead($front_cover,'png');
-            }
 
-
-            $thumb='';
-            if($form->get('front_cover')->getData()!=null && $form->get('thumb')->getData()== null){
-
-                $src=imagecreatefromstring($front_cover_str);
-                $size_src=getimagesize($front_cover_path);
-                $w=$size_src['0'];
-                $h=$size_src['1'];
-                $max=300;
-                if($w > $h){
-                    $w=$max;
-                    $h=$h*($max/$size_src['0']);
-                }else{
-                    $h=$max;
-                    $w=$w*($max/$size_src['1']);
-                }
-                $image=imagecreatetruecolor($w, $h);
-                imagecopyresampled($image, $src, 0, 0, 0, 0, $w, $h, $size_src['0'], $size_src['1']);
-                ob_start();
-                imagepng($image);
-                // Capture the output
-                $imagedata = ob_get_contents();
-                // Clear the output buffer
-                ob_end_clean();
-                $thumb= Common::addBase64ImgHead(base64_encode($imagedata),'png');
-
-            }elseif($form->get('thumb')->getData()!= null){
-                $thumb=$form->get('thumb')->getData()->getPathName();
-                $thumb=base64_encode(file_get_contents($thumb));
-                $thumb= Common::addBase64ImgHead($thumb,'png');
-            }
+            $photo=$this->dealPhotoProcess($form->get('front_cover')->getData(),$form->get('thumb')->getData());
+            $front_cover=$photo['front_cover'];
+            $thumb=$photo['thumb'];
 
 
             $em=$this->getEm();
@@ -513,6 +443,26 @@ class DefaultController extends BaseController
         return $data;
     }
 
+
+    /**
+     * @Route("/article/delete/id/{id}",name="articledelete",requirements={"id"="\d+"})
+     */
+    public function articleDeleteAction($id)
+    {
+        $article_em=$this->getArticleRepository();
+        $em=$this->getEm();
+
+        $article=$article_em->find(intval($id));
+        $article->setStatus(2);
+        $em->persist($article);
+        $em->flush();
+
+        return $this->redirect($this->generateUrl('articlelist'));
+
+    }
+
+
+
     /**
      * @Route("/admin/scanningLogin",name="adminScanningLogin")
      * @Template()
@@ -580,5 +530,232 @@ class DefaultController extends BaseController
         QRcode::png($text,false,3,16,2);
         exit;
     }
+
+    private function dealPhotoProcess($form_front_cover,$form_thumb){
+        $front_cover='';
+        if($form_front_cover!=null){
+            $front_cover_path=$form_front_cover->getPathName();
+            $front_cover_str=file_get_contents($front_cover_path);
+            $front_cover=base64_encode($front_cover_str);
+            $front_cover= Common::addBase64ImgHead($front_cover,'png');
+        }
+
+
+
+        $thumb='';
+        if($form_front_cover!=null && $form_thumb== null){
+            $src=imagecreatefromstring($front_cover_str);
+            $size_src=getimagesize($front_cover_path);
+            $w=$size_src['0'];
+            $h=$size_src['1'];
+            $max=300;
+            if($w > $h){
+                $w=$max;
+                $h=$h*($max/$size_src['0']);
+            }else{
+                $h=$max;
+                $w=$w*($max/$size_src['1']);
+            }
+            $image=imagecreatetruecolor($w, $h);
+            imagecopyresampled($image, $src, 0, 0, 0, 0, $w, $h, $size_src['0'], $size_src['1']);
+            ob_start();
+            imagepng($image);
+            // Capture the output
+            $imagedata = ob_get_contents();
+            // Clear the output buffer
+            ob_end_clean();
+            $thumb= Common::addBase64ImgHead(base64_encode($imagedata),'png');
+
+        }elseif($form_thumb!= null){
+            $thumb=$form_thumb->getPathName();
+            $thumb=base64_encode(file_get_contents($thumb));
+            $thumb= Common::addBase64ImgHead($thumb,'png');
+        }
+
+        return ['front_cover'=>$front_cover,'thumb'=>$thumb];
+
+    }
+
+    /**
+     * @Route("/user/list",name="userlist")
+     * @Template("TarsierAdminBundle:user:list.html.twig")
+     */
+    public function userListAction()
+    {
+        if(!$this->isLogin())
+            return $this->redirect($this->generateUrl('adminlogin'));
+
+        $user_em=$this->getUserRepository();
+        $list_query=$user_em->findAllUser();
+        $page=$this->getRequest()->get("page",1);
+
+
+        $paginator  = $this->get('knp_paginator');
+
+        $pagination = $paginator->paginate(
+            $list_query,
+            $page/*page number*/,
+            10/*limit per page*/
+        );
+
+        $data=[
+            'userName'=>$this->getRequest()->cookies->get('userName'),
+            'nav'=>'user',
+            'pagination' => $pagination,
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @Route("/user/edit/id/{id}",name="useredit")
+     * @ParamConverter("user",class="TarsierHomeBundle:user")
+     * @Template("TarsierAdminBundle:user:edit.html.twig")
+     */
+    public function userEditAction(user $user)
+    {
+
+        if(!$this->isLogin())
+            return $this->redirect($this->generateUrl('adminlogin'));
+
+        $password_orig=$user->getPassword();
+
+        $userName=$this->getRequest()->cookies->get('userName');
+        $profile=$user->getProfile();
+        $budiler=$this->createFormBuilder($user,['attr'=>['id'=>'form-save','class'=>'form-save']]);
+        $form=$budiler
+            ->add('username','text',['data'=>$user->getUsername(),'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin','placeholder'=>"UserName"]])
+            ->add('password','password',['data'=>'','label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
+            ->add('status','choice',['data'=>$user->getStatus(),'choices' => ['0'=>'Delete','1'=>'Pending','2'=>'Effective'],'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('email','text',['data'=>$user->getEmail(),'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('moon', 'text',['label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
+            ->add('age', 'integer',['label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
+            ->add('sex', 'choice',['choices' => ['0'=>'Famle','1'=>'Male'],'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
+            ->add('Save','submit',['attr'=>['class'=>'btn btn-lg btn-primary btn-block form-save-btn']])
+            ->getForm();
+
+
+        $form->handleRequest($this->getRequest());
+
+        if($form->isValid()) {
+
+
+            $em=$this->getEm();
+            $sem=$this->getEm('sqlite');
+
+            $ret_form = $this->getRequest()->get('form');
+
+            if($ret_form['password']==null || trim($ret_form['password'])=='')
+                $user->setPassword($password_orig);
+            else
+                $user->setPassword(md5($ret_form['password'].$user->getSalt()));
+
+
+            $em->persist($user);
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('userlist'));
+
+        }
+
+
+
+        $data=[
+            'save_form'=>$form->createView(),
+            'userName'=>$userName,
+            'nav'=>'user',
+            'id'=>$user->getId(),
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @Route("/user/add",name="useradd")
+     * @Template("TarsierAdminBundle:user:edit.html.twig")
+     */
+    public function userAddAction()
+    {
+
+        if(!$this->isLogin())
+            return $this->redirect($this->generateUrl('adminlogin'));
+
+        $user=new user();
+        $userName=$this->getRequest()->cookies->get('userName');
+        $budiler=$this->createFormBuilder($user,['attr'=>['id'=>'form-save','class'=>'form-save']]);
+        $form=$budiler
+            ->add('username','text',['data'=>'','label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin','placeholder'=>"UserName"]])
+            ->add('password','password',['data'=>'','label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('status','choice',['data'=>'','choices' => ['0'=>'Delete','1'=>'Pending','2'=>'Effective'],'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('email','email',['data'=>'','label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add(
+                $budiler->create('profile','form')
+                    ->add('moon', 'text',['label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
+                    ->add('age', 'integer',['label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
+                    ->add('sex', 'choice',['choices' => ['0'=>'Famle','1'=>'Male'],'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
+            )
+            ->add('Save','submit',['attr'=>['class'=>'btn btn-lg btn-primary btn-block form-save-btn']])
+            ->getForm();
+
+
+        $form->handleRequest($this->getRequest());
+
+        if($form->isValid()) {
+
+
+            $em=$this->getEm();
+
+            $ret_form = $this->getRequest()->get('form');
+
+            $c=new Common();
+
+            $user->setSalt($c->createRandStr());
+
+            $profile=new userprofile();
+            $profile->setMoon($ret_form['profile']['moon']);
+            $profile->setAge($ret_form['profile']['age']);
+            $profile->setSex($ret_form['profile']['sex']);
+            $profile->setPacket(1);
+            $em->persist($profile);
+            $em->flush();
+            $user->setProfile($profile);
+
+            $user->setPassword(md5($ret_form['password'].$user->getSalt()));
+
+            $em->persist($user);
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('userlist'));
+
+        }
+
+
+
+        $data=[
+            'save_form'=>$form->createView(),
+            'userName'=>$userName,
+            'nav'=>'user',
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @Route("/user/delete/id/{id}",name="userdelete",requirements={"id"="\d+"})
+     */
+    public function userDeleteAction($id)
+    {
+        $user_em=$this->getUserRepository();
+        $em=$this->getEm();
+
+        $user=$user_em->find(intval($id));
+        $user->setStatus(0);
+        $em->persist($user);
+        $em->flush();
+
+        return $this->redirect($this->generateUrl('userlist'));
+
+    }
+
 
 }
