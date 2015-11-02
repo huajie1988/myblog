@@ -12,4 +12,11 @@ use Doctrine\ORM\EntityRepository;
  */
 class RssRepository extends EntityRepository
 {
+
+    public function findAllRss(){
+        $dql="SELECT r FROM TarsierHomeBundle:rss r ORDER BY r.id DESC";
+        $query=$this->getEntityManager()->createQuery($dql);
+        return $query;
+    }
+
 }

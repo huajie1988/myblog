@@ -1,0 +1,66 @@
+{% extends "TarsierAdminBundle::layout.html.twig" %}
+
+{% block main %}
+<div class="panel panel-default">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Friend Link List</div>
+    <div class="panel-body">
+        <a href="/friendlink/add">
+            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Add New</button>
+        </a>
+    </div>
+    <table class="table table-center">
+        <colgroup>
+            <col width="33.33333333%">
+            <col width="33.33333333%">
+            <col width="33.33333333%">
+        </colgroup>
+        <tr>
+            {# sorting of properties based on query components #}
+            <td{% if pagination.isSorted('f.id') %} class="sorted" {% endif %}><span class="glyphicon glyphicon-sort" aria-hidden="true"></span>&nbsp;&nbsp;
+            <strong>{{ knp_pagination_sortable(pagination, 'Sort', 'f.sort') }}</strong>
+            </td>
+            <td><span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>&nbsp;&nbsp;
+                <strong>{{ knp_pagination_sortable(pagination, 'Title', 'f.title') }}</strong>
+            </td>
+            <td><span class="glyphicon glyphicon-sort-by-order" aria-hidden="true"></span>&nbsp;&nbsp;
+                <strong>{{ knp_pagination_sortable(pagination, 'Status', 'f.status') }}</strong>
+            </td>
+        </tr>
+    </table>
+    <table class="table">
+        <colgroup>
+            <col width="20%">
+            <col width="30%">
+            <col width="30%">
+            <col width="20%">
+        </colgroup>
+        <thead>
+
+        <tr>
+            <th>#</th>
+            <th>UserName</th>
+            <th>Status</th>
+            <th>Operating</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for article in pagination %}
+        <tr>
+            <th scope="row">{{ article.id }}</th>
+            <td><strong>{{ article.title }}</strong></td>
+            <td>{{ article.status|translateStatus(['delete','effective']) }}</td>
+            <td>
+                <a href="/friendlink/edit/id/{{ article.id }}">
+                    <button class="btn btn-primary" type="submit">&nbsp;&nbsp;Edit&nbsp;&nbsp;</button>
+                </a>
+                <a href="/friendlink/delete/id/{{ article.id }}">
+                    <button class="btn btn-danger" type="submit">Delete</button>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

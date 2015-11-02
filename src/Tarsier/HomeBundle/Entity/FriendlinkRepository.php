@@ -12,4 +12,11 @@ use Doctrine\ORM\EntityRepository;
  */
 class FriendlinkRepository extends EntityRepository
 {
+
+    public function findAllFriendlink(){
+        $dql="SELECT f FROM TarsierHomeBundle:friendlink f ORDER BY f.sort DESC";
+        $query=$this->getEntityManager()->createQuery($dql);
+        return $query;
+    }
+
 }

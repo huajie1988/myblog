@@ -10,9 +10,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Tarsier\HomeBundle\Entity\article;
 use Tarsier\HomeBundle\Entity\articleimg;
+use Tarsier\HomeBundle\Entity\friendlink;
 use Tarsier\HomeBundle\Entity\qrrecord;
 use Tarsier\HomeBundle\Entity\tags;
 use Tarsier\HomeBundle\Entity\user;
+use Tarsier\HomeBundle\Entity\rss;
 use Doctrine\Common\Util\Debug;
 use Tarsier\HomeBundle\Entity\userprofile;
 use Tarsier\HomeBundle\Service\Common;
@@ -756,6 +758,303 @@ class DefaultController extends BaseController
         return $this->redirect($this->generateUrl('userlist'));
 
     }
+
+    /**
+     * @Route("/rss/list",name="rsslist")
+     * @Template("TarsierAdminBundle:rss:list.html.twig")
+     */
+    public function rssListAction()
+    {
+        if(!$this->isLogin())
+            return $this->redirect($this->generateUrl('adminlogin'));
+
+        $rss_em=$this->getRssRepository();
+        $list_query=$rss_em->findAllRss();
+        $page=$this->getRequest()->get("page",1);
+
+
+        $paginator  = $this->get('knp_paginator');
+
+        $pagination = $paginator->paginate(
+            $list_query,
+            $page/*page number*/,
+            10/*limit per page*/
+        );
+
+        $data=[
+            'userName'=>$this->getRequest()->cookies->get('userName'),
+            'nav'=>'rss',
+            'pagination' => $pagination,
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @Route("/rss/edit/id/{id}",name="rssedit")
+     * @ParamConverter("rss",class="TarsierHomeBundle:rss")
+     * @Template("TarsierAdminBundle:rss:edit.html.twig")
+     */
+    public function rssEditAction(rss $rss)
+    {
+
+        if(!$this->isLogin())
+            return $this->redirect($this->generateUrl('adminlogin'));
+
+
+        $userName=$this->getRequest()->cookies->get('userName');
+        $budiler=$this->createFormBuilder($rss,['attr'=>['id'=>'form-save','class'=>'form-save']]);
+        $form=$budiler
+            ->add('title','text',['data'=>$rss->getTitle(),'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin','placeholder'=>"RssName"]])
+            ->add('url','text',['data'=>$rss->getUrl(),'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('status','choice',['data'=>$rss->getStatus(),'choices' => ['0'=>'Delete','1'=>'Effective'],'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('Save','submit',['attr'=>['class'=>'btn btn-lg btn-primary btn-block form-save-btn']])
+            ->getForm();
+
+
+        $form->handleRequest($this->getRequest());
+
+        if($form->isValid()) {
+
+
+            $em=$this->getEm();
+
+            $ret_form = $this->getRequest()->get('form');
+
+
+            $em->persist($rss);
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('rsslist'));
+
+        }
+
+
+
+        $data=[
+            'save_form'=>$form->createView(),
+            'userName'=>$userName,
+            'nav'=>'rss',
+            'id'=>$rss->getId(),
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @Route("/rss/add",name="rssadd")
+     * @Template("TarsierAdminBundle:rss:edit.html.twig")
+     */
+    public function rssAddAction()
+    {
+
+        if(!$this->isLogin())
+            return $this->redirect($this->generateUrl('adminlogin'));
+
+        $rss=new rss();
+        $userName=$this->getRequest()->cookies->get('userName');
+        $budiler=$this->createFormBuilder($rss,['attr'=>['id'=>'form-save','class'=>'form-save']]);
+        $form=$budiler
+            ->add('title','text',['data'=>'','label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin','placeholder'=>"RssName"]])
+            ->add('url','text',['data'=>'','label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('status','choice',['data'=>'','choices' => ['0'=>'Delete','1'=>'Effective'],'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('Save','submit',['attr'=>['class'=>'btn btn-lg btn-primary btn-block form-save-btn']])
+            ->getForm();
+
+
+        $form->handleRequest($this->getRequest());
+
+        if($form->isValid()) {
+
+
+            $em=$this->getEm();
+
+            $ret_form = $this->getRequest()->get('form');
+
+            $em->persist($rss);
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('rsslist'));
+
+        }
+
+
+
+        $data=[
+            'save_form'=>$form->createView(),
+            'userName'=>$userName,
+            'nav'=>'rss',
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @Route("/rss/delete/id/{id}",name="rssdelete",requirements={"id"="\d+"})
+     */
+    public function rssDeleteAction($id)
+    {
+        $rss_em=$this->getRssRepository();
+        $em=$this->getEm();
+
+        $rss=$rss_em->find(intval($id));
+        $rss->setStatus(0);
+        $em->persist($rss);
+        $em->flush();
+
+        return $this->redirect($this->generateUrl('rsslist'));
+
+    }
+
+    /**
+     * @Route("/friendlink/list",name="friendlinklist")
+     * @Template("TarsierAdminBundle:friendlink:list.html.twig")
+     */
+    public function friendlinkListAction()
+    {
+        if(!$this->isLogin())
+            return $this->redirect($this->generateUrl('adminlogin'));
+
+        $friendlink_em=$this->getFriendlinkRepository();
+        $list_query=$friendlink_em->findAllFriendlink();
+        $page=$this->getRequest()->get("page",1);
+
+
+        $paginator  = $this->get('knp_paginator');
+
+        $pagination = $paginator->paginate(
+            $list_query,
+            $page/*page number*/,
+            10/*limit per page*/
+        );
+
+        $data=[
+            'userName'=>$this->getRequest()->cookies->get('userName'),
+            'nav'=>'friendlink',
+            'pagination' => $pagination,
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @Route("/friendlink/edit/id/{id}",name="friendlinkedit")
+     * @ParamConverter("friendlink",class="TarsierHomeBundle:friendlink")
+     * @Template("TarsierAdminBundle:friendlink:edit.html.twig")
+     */
+    public function friendlinkEditAction(friendlink $friendlink)
+    {
+
+        if(!$this->isLogin())
+            return $this->redirect($this->generateUrl('adminlogin'));
+
+
+        $userName=$this->getRequest()->cookies->get('userName');
+        $budiler=$this->createFormBuilder($friendlink,['attr'=>['id'=>'form-save','class'=>'form-save']]);
+        $form=$budiler
+            ->add('title','text',['data'=>$friendlink->getTitle(),'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin','placeholder'=>"Friendlink Name"]])
+            ->add('url','text',['data'=>$friendlink->getUrl(),'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('sort','integer',['data'=>$friendlink->getSort(),'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('status','choice',['data'=>$friendlink->getStatus(),'choices' => ['0'=>'Delete','1'=>'Effective'],'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('Save','submit',['attr'=>['class'=>'btn btn-lg btn-primary btn-block form-save-btn']])
+            ->getForm();
+
+
+        $form->handleRequest($this->getRequest());
+
+        if($form->isValid()) {
+
+
+            $em=$this->getEm();
+
+            $ret_form = $this->getRequest()->get('form');
+
+
+            $em->persist($friendlink);
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('friendlinklist'));
+
+        }
+
+
+
+        $data=[
+            'save_form'=>$form->createView(),
+            'userName'=>$userName,
+            'nav'=>'friendlink',
+            'id'=>$friendlink->getId(),
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @Route("/friendlink/add",name="friendlinkadd")
+     * @Template("TarsierAdminBundle:friendlink:edit.html.twig")
+     */
+    public function friendlinkAddAction()
+    {
+
+        if(!$this->isLogin())
+            return $this->redirect($this->generateUrl('adminlogin'));
+
+        $friendlink=new friendlink();
+        $userName=$this->getRequest()->cookies->get('userName');
+        $budiler=$this->createFormBuilder($friendlink,['attr'=>['id'=>'form-save','class'=>'form-save']]);
+        $form=$budiler
+            ->add('title','text',['data'=>$friendlink->getTitle(),'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin','placeholder'=>"Friendlink Name"]])
+            ->add('url','text',['data'=>$friendlink->getUrl(),'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('sort','integer',['data'=>$friendlink->getSort(),'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('status','choice',['data'=>$friendlink->getStatus(),'choices' => ['0'=>'Delete','1'=>'Effective'],'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
+            ->add('Save','submit',['attr'=>['class'=>'btn btn-lg btn-primary btn-block form-save-btn']])
+            ->getForm();
+
+
+        $form->handleRequest($this->getRequest());
+
+        if($form->isValid()) {
+
+
+            $em=$this->getEm();
+
+            $ret_form = $this->getRequest()->get('form');
+
+            $em->persist($friendlink);
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('friendlinklist'));
+
+        }
+
+
+
+        $data=[
+            'save_form'=>$form->createView(),
+            'userName'=>$userName,
+            'nav'=>'friendlink',
+        ];
+
+        return $data;
+    }
+
+    /**
+     * @Route("/friendlink/delete/id/{id}",name="friendlinkdelete",requirements={"id"="\d+"})
+     */
+    public function friendlinkDeleteAction($id)
+    {
+        $friendlink_em=$this->getFriendlinkRepository();
+        $em=$this->getEm();
+
+        $friendlink=$friendlink_em->find(intval($id));
+        $friendlink->setStatus(0);
+        $em->persist($friendlink);
+        $em->flush();
+
+        return $this->redirect($this->generateUrl('friendlinklist'));
+
+    }
+
 
 
 }
