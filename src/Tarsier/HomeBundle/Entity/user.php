@@ -224,7 +224,7 @@ class user{
      * @param \Tarsier\HomeBundle\Entity\userprofile $profile
      * @return user
      */
-    public function setProfile($profile = null)
+    public function setProfile(\Tarsier\HomeBundle\Entity\userprofile $profile = null)
     {
         $this->profile = $profile;
 
@@ -425,6 +425,9 @@ class user{
      * @return string
      */
     public function getMoon(){
+
+        if($this->getProfile()==null)
+            return '';
         return $this->getProfile()->getMoon();
     }
 
@@ -434,6 +437,10 @@ class user{
      * @return string
      */
     public function getAge(){
+
+        if($this->getProfile()==null)
+            return 0;
+
         return $this->getProfile()->getAge();
     }
 
@@ -443,6 +450,10 @@ class user{
      * @return string
      */
     public function getSex(){
+
+        if($this->getProfile()==null)
+            return 1;
+
         return $this->getProfile()->getSex();
     }
 
@@ -454,7 +465,8 @@ class user{
      * @return user
      */
     public function setMoon($moon){
-        $this->getProfile()->setMoon($moon);
+        if($this->getProfile()!=null)
+            $this->getProfile()->setMoon($moon);
 
         return $this;
     }
@@ -466,7 +478,8 @@ class user{
      * @return user
      */
     public function setAge($age){
-        $this->getProfile()->setAge($age);
+        if($this->getProfile()!=null)
+            $this->getProfile()->setAge($age);
 
         return $this;
     }
@@ -478,7 +491,8 @@ class user{
      * @return user
      */
     public function setSex($sex){
-        $this->getProfile()->setSex($sex);
+        if($this->getProfile()!=null)
+            $this->getProfile()->setSex($sex);
         return $this;
     }
 

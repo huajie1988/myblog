@@ -690,20 +690,15 @@ class DefaultController extends BaseController
             ->add('password','password',['data'=>'','label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
             ->add('status','choice',['data'=>'','choices' => ['0'=>'Delete','1'=>'Pending','2'=>'Effective'],'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
             ->add('email','email',['data'=>'','label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin']])
-            ->add(
-                $budiler->create('profile','form')
-                    ->add('moon', 'text',['label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
-                    ->add('age', 'integer',['label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
-                    ->add('sex', 'choice',['choices' => ['0'=>'Famle','1'=>'Male'],'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
-            )
+            ->add('moon', 'text',['label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
+            ->add('age', 'integer',['label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
+            ->add('sex', 'choice',['choices' => ['0'=>'Famle','1'=>'Male'],'label_attr'=>['class'=>''],'attr'=>['class'=>'form-control input-signin'],'required'=>0])
             ->add('Save','submit',['attr'=>['class'=>'btn btn-lg btn-primary btn-block form-save-btn']])
             ->getForm();
-
 
         $form->handleRequest($this->getRequest());
 
         if($form->isValid()) {
-
 
             $em=$this->getEm();
 
@@ -714,9 +709,9 @@ class DefaultController extends BaseController
             $user->setSalt($c->createRandStr());
 
             $profile=new userprofile();
-            $profile->setMoon($ret_form['profile']['moon']);
-            $profile->setAge($ret_form['profile']['age']);
-            $profile->setSex($ret_form['profile']['sex']);
+            $profile->setMoon($ret_form['moon']);
+            $profile->setAge($ret_form['age']);
+            $profile->setSex($ret_form['sex']);
             $profile->setPacket(1);
             $em->persist($profile);
             $em->flush();
