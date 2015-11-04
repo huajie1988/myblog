@@ -52,5 +52,12 @@ class ArticleRepository extends EntityRepository
         return $query;
     }
 
+    public function findRssArticle($nums=10)
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT a.id,a.title,a.content,a.create_time FROM TarsierHomeBundle:article a WHERE a.status=1 ORDER BY a.create_time DESC,a.top DESC')
+            ->setMaxResults($nums)
+            ->getArrayResult();
+    }
 
 }

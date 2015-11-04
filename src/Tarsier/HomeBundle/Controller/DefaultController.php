@@ -291,6 +291,40 @@ class DefaultController extends Controller
         exit();
     }
 
+    /**
+     * @Route("/feed")
+     * @Method("GET")
+     * @Template()
+     */
+    public function rssAction(){
+        $r=new rssReader('myrss');
+
+        $em=$this->getDoctrine()->getManager();
+        $article=$em->getRepository('TarsierHomeBundle:article')->findRssArticle(10);
+
+
+        $items=[];
+        foreach ($article as $a) {
+            $items[]=[
+                'title'=>$a['title'],
+                'link'=>"http://".$_SERVER['SERVER_NAME']."/detail/id/".$a['id'],
+                'description'=>htmlspecialchars($a['content']),
+                'pubDate'=>gmdate('D, d M Y H:i:s T',$a['create_time']),
+            ];
+        }
+
+        $data=[
+            'title'=>'KumaCore',
+            'link'=>"http://".$_SERVER['SERVER_NAME'],
+            'description'=>'KumaCore|熊心 一个默默无闻的程序员闲的无聊于是搞了这么一个东西',
+            'image'=>[],
+            'item'=>$items
+        ];
+        print_r($r->create($data));
+        exit();
+    }
+
+
     private function getFriendLink(){
         return $this->getDoctrine()
             ->getManager()

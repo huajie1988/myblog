@@ -13,6 +13,8 @@ class rssReader {
 
     private $feed_url;
     private $article;
+    private $rssTpl;
+
 
     public function __construct($feeds){
             if(is_array($feeds)){
@@ -42,6 +44,78 @@ class rssReader {
         }
 
         return $this->article;
+
+    }
+
+    /**
+     * create rss feed
+     *
+     * @param array $data
+     * @return string
+     */
+
+    public function create($data){
+
+        $search=['title','link','description','image','item'];
+        foreach($data as $k=>$v){
+            if (!in_array($k, $search)) {
+                echo "The '$k' is illegal";
+                exit;
+            }
+            $$k=$v;
+        }
+
+        $this->initTpl($title,$link,$description,$image);
+
+        $itemTpl=[];
+
+        $search=['title','link','description','pubDate'];
+
+        foreach ($item as $i) {
+
+            foreach ($search as $v) {
+                if (!isset($i[$v])) {
+                    echo "The '$v' isn't isset";
+                    exit;
+                }
+            }
+
+
+            $itemTpl[]=sprintf("<item>
+                          <title>%s</title>
+                          <link>%s</link>
+                          <description>%s</description>
+                          <pubDate>%s</pubDate>
+                        </item>",$i['title'],$i['link'],$i['description'],$i['pubDate']);
+        }
+        $itemTpl=implode('',$itemTpl);
+
+        $this->rssTpl=str_replace('{%item%}',$itemTpl,$this->rssTpl);
+        return $this->rssTpl;
+    }
+
+    private function initTpl($title,$link,$description,$image=array()){
+        $this->rssTpl='<rss version="2.0">
+              <channel>
+                <title>'.$title.'</title>
+                <link>'.$link.'</link>
+                <description>'.$description.'</description>
+                {%image%}
+                {%item%}
+              </channel>
+            </rss>';
+
+        $imageTpl='';
+
+        if(!empty($image)){
+            $imageTpl='<image>
+                  <url>'.$image['url'].'</url>
+                  <title>'.$image['title'].'</title>
+                  <link>'.$image['link'].'</link>
+                </image>';
+        }
+
+        $this->rssTpl=str_replace('{%image%}',$imageTpl,$this->rssTpl);
 
     }
 
