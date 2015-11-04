@@ -88,7 +88,7 @@ class DefaultController extends Controller
 
         $data['article']=$article;
 
-        if($this->getRequest()->cookies->get('userName')==null)
+        if($this->getRequest()->cookies->get('userName')==null && $article->getStatus()!=1)
             return $this->redirect($this->generateUrl('indexPage'));
 
         $tagsArr=[];

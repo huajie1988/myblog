@@ -587,6 +587,11 @@ class DefaultController extends BaseController
         if(!$this->isLogin())
             return $this->redirect($this->generateUrl('adminlogin'));
 
+
+        if(!$this->isAdmin()){
+            return $this->redirect($this->generateUrl('adminindex'));
+        }
+
         $user_em=$this->getUserRepository();
         $list_query=$user_em->findAllUser();
         $page=$this->getRequest()->get("page",1);
@@ -619,6 +624,10 @@ class DefaultController extends BaseController
 
         if(!$this->isLogin())
             return $this->redirect($this->generateUrl('adminlogin'));
+
+        if(!$this->isAdmin()){
+            return $this->redirect($this->generateUrl('adminindex'));
+        }
 
         $password_orig=$user->getPassword();
 
@@ -682,6 +691,10 @@ class DefaultController extends BaseController
         if(!$this->isLogin())
             return $this->redirect($this->generateUrl('adminlogin'));
 
+        if(!$this->isAdmin()){
+            return $this->redirect($this->generateUrl('adminindex'));
+        }
+
         $user=new user();
         $userName=$this->getRequest()->cookies->get('userName');
         $budiler=$this->createFormBuilder($user,['attr'=>['id'=>'form-save','class'=>'form-save']]);
@@ -712,7 +725,7 @@ class DefaultController extends BaseController
             $profile->setMoon($ret_form['moon']);
             $profile->setAge($ret_form['age']);
             $profile->setSex($ret_form['sex']);
-            $profile->setPacket(1);
+            $profile->setPacket(0);
             $em->persist($profile);
             $em->flush();
             $user->setProfile($profile);
@@ -742,6 +755,14 @@ class DefaultController extends BaseController
      */
     public function userDeleteAction($id)
     {
+
+        if(!$this->isLogin())
+            return $this->redirect($this->generateUrl('adminlogin'));
+
+        if(!$this->isAdmin()){
+            return $this->redirect($this->generateUrl('adminindex'));
+        }
+
         $user_em=$this->getUserRepository();
         $em=$this->getEm();
 
@@ -889,6 +910,10 @@ class DefaultController extends BaseController
      */
     public function rssDeleteAction($id)
     {
+
+        if(!$this->isLogin())
+            return $this->redirect($this->generateUrl('adminlogin'));
+
         $rss_em=$this->getRssRepository();
         $em=$this->getEm();
 
@@ -1038,6 +1063,10 @@ class DefaultController extends BaseController
      */
     public function friendlinkDeleteAction($id)
     {
+
+        if(!$this->isLogin())
+            return $this->redirect($this->generateUrl('adminlogin'));
+
         $friendlink_em=$this->getFriendlinkRepository();
         $em=$this->getEm();
 
@@ -1050,6 +1079,12 @@ class DefaultController extends BaseController
 
     }
 
+    private function isAdmin(){
+        $ret = $this->getUserRepository()->findOneBy(['username'=>$this->getRequest()->cookies->get('userName')]);
+
+        return $ret->getProfile()->getPacket()==1?true:false;
+
+    }
 
 
 }
