@@ -127,7 +127,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/list/tags/{tags}",defaults={"tags":"technology"},requirements={"tags"="\w+"})
+     * @Route("/list/tags/{tags}",defaults={"tags":"technology"})
      * @Method("GET")
      * @Template()
      */
@@ -135,7 +135,7 @@ class DefaultController extends Controller
     public function listAction($tags){
 
         $nav_tags=$this->getRequest()->get('tags');
-
+        $nav_tags=strip_tags($nav_tags);
         $em=$this->getDoctrine()->getManager();
 
         $c=new Common();
