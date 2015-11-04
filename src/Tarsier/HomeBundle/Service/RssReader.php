@@ -95,7 +95,8 @@ class rssReader {
     }
 
     private function initTpl($title,$link,$description,$image=array()){
-        $this->rssTpl='<rss version="2.0">
+        $this->rssTpl='<?xml version="1.0" encoding="utf-8"?>
+            <rss version="2.0">
               <channel>
                 <title>'.$title.'</title>
                 <link>'.$link.'</link>
