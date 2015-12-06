@@ -47,4 +47,21 @@ class UserRepository extends EntityRepository
         return $query;
     }
 
+    public function checkIssetUser($username,$email){
+        $dql =  $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('u.id,u.username,u.password,u.salt,u.status')
+            ->from('TarsierHomeBundle:user','u')
+            ->where("u.username=:username OR u.email=:email")
+            ->getDQL();
+
+        $ret = $this->getEntityManager()
+            ->createQuery($dql)
+            ->setParameter("username",$username)
+            ->setParameter("email",$email)
+            ->getResult();
+
+        return count($ret);
+    }
+
 }

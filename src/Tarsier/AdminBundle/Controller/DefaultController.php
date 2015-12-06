@@ -489,14 +489,14 @@ class DefaultController extends BaseController
 
     /**
      * @Route("/admin/scanningLoginAuto",name="adminScanningLoginauto")
-     * @Template()
+     * @Template("TarsierAdminBundle:Default:success.html.twig")
      */
 
     public function scanningLoginAction(){
         $uid=$this->getRequest()->get('uid');
         $code=$this->getRequest()->get('code');
         $record = $this->getQrRecordRepository()->findOneBy(['uid'=>$uid,'code'=>$code]);
-
+        $data=[];
         if(empty($record)){
 
             $sem=$this->getEm('sqlite');
@@ -505,12 +505,23 @@ class DefaultController extends BaseController
             $qr_record->setCode($code);
             $sem->persist($qr_record);
             $sem->flush();
-
-            echo json_encode(['status'=>200]);
+            $data=[
+                'operation'=>'Login Successful!',
+                'status'=>200,
+                'url'=>'javascript:window.close();',
+                'btn_val'=>'Close',
+                'btn_cls'=>'btn-primary'
+            ];
         }else{
-            echo json_encode(['status'=>404]);
+            $data=[
+                'operation'=>'Login Fail! Please reload',
+                'status'=>404,
+                'url'=>'javascript:window.location.reload();',
+                'btn_val'=>'Reload',
+                'btn_cls'=>'btn-danger'
+            ];
         }
-        exit();
+        return $data;
     }
 
     private function isLogin(){
@@ -1079,11 +1090,128 @@ class DefaultController extends BaseController
 
     }
 
+    /**
+     * @Route("/admin/sendmail/type/{type}",name="adminsendmail",requirements={"type"="\w+"})
+     * @Template("TarsierAdminBundle:sendmail:show.html.twig")
+     */
+
+    public function sendMailAction($type){
+
+        if($this->isLogin())
+            return $this->redirect($this->generateUrl('adminindex'));
+
+        $allow_type=['captcha','forget','registered'];
+
+        $user=new user();
+        $form=$this->createFormBuilder($user,['attr'=>['id'=>'form-signin']])
+            ->add('email','text',['label_attr'=>['class'=>'sr-only'],'attr'=>['class'=>'form-control input-signin','placeholder'=>"Email address"]])
+            ->getForm();
+
+        if(trim($type)=='registered'){
+            $form->add('username','text',['label_attr'=>['class'=>'sr-only'],'attr'=>['class'=>'form-control input-signin','placeholder'=>"Email address"]])
+                ->add('password','password',['label_attr'=>['class'=>'sr-only'],'attr'=>['class'=>'form-control input-signin','placeholder'=>"password"]]);
+        }
+
+        $form->add('Send mail','submit',['attr'=>['class'=>'btn btn-lg btn-primary btn-block']]);
+
+        $form->handleRequest($this->getRequest());
+
+        if($form->isValid()) {
+            $ret_form = $this->getRequest()->get('form');
+            $type=$this->getRequest()->get('type');
+
+            if(!in_array($type,$allow_type)){
+                $error=new FormError('The type is not right!');
+                $form->addError($error);
+                return [
+                    'login_form'=>$form->createView(),
+                    'type'=>$type,
+                    'allow_type'=>$allow_type,
+                ];
+            }
+
+            $user_em=$this->getUserRepository();
+
+            if($type=='registered'){
+                $ret=$user_em->checkIssetUser($ret_form['username'],$ret_form['email']);
+                if($ret>0){
+                    $error=new FormError('The email or username has isset! Please change email address');
+                    $form->addError($error);
+                    return [
+                        'login_form'=>$form->createView(),
+                        'type'=>$type,
+                        'allow_type'=>$allow_type,
+                    ];
+                }
+            }else{
+                $user=$user_em->findOneBy(['email'=>$ret_form['email']]);
+                if($user==null){
+                    $error=new FormError('The email has\'t isset! Please check email address');
+                    $form->addError($error);
+                    return [
+                        'login_form'=>$form->createView(),
+                        'type'=>$type,
+                        'allow_type'=>$allow_type,
+                    ];
+                }
+
+            }
+
+            $code=$this->getRequest()->getSession()->get('captcha');
+            $uid = $this->getRequest()->getSession()->get('uid');
+
+            $maildata=[
+                'username'=>$user->getUsername(),
+                'url'=>"http://".$_SERVER['SERVER_NAME']."/admin/scanningLoginAuto?uid=$uid&code=$code",
+            ];
+            $this->sendMail($type,$maildata,$ret_form['email']);
+        }
+
+        $data=[
+            'type'=>$type,
+            'login_form'=>$form->createView(),
+            'allow_type'=>$allow_type,
+        ];
+
+        return $data;
+    }
+
+
     private function isAdmin(){
         $ret = $this->getUserRepository()->findOneBy(['username'=>$this->getRequest()->cookies->get('userName')]);
 
         return $ret->getProfile()->getPacket()==1?true:false;
 
+    }
+
+    private function sendMail($type,$user,$to_email,$form_email='postmaster@huajie1988.net'){
+
+        $subject=[
+            'registered'=>'Thanks you registered my site',
+            'captcha'=>'Login captcha mail',
+            'forget'=>'Forget password mail',
+        ];
+
+        $body=[
+            'registered'=>'Emails/reg.html.twig',
+            'captcha'=>'Emails/captcha.html.twig',
+            'forget'=>'Emails/forget.html.twig',
+        ];
+
+        $message= \Swift_Message::newInstance()
+            ->setSubject($subject[$type])
+            ->setFrom($form_email)
+            ->setTo($to_email)
+            ->setBody(
+                $this->renderView(
+                // app/Resources/views/Emails/reg.html.twig
+                    $body[$type],
+                    array('user' => $user)
+                ),
+                'text/html'
+            );
+
+        $this->get('mailer')->send($message);
     }
 
 

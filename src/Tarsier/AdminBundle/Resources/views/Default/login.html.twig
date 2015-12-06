@@ -48,8 +48,8 @@
     <script type="application/javascript">
 
         $(document).ready(function(){
-
-            html="<div><img id='captcha_img' src='"+"{{ captcha_img }}"+"' /></div>";
+            html='<ul class="nav nav-tabs nav-justified"><li role="presentation" class="active"><a href="javascript:void(0);" onclick="chooseCaptcha(0,this);">Weixin Login</a></li><li role="presentation"><a href="javascript:void(0);" onclick="chooseCaptcha(1,this);">Email Login</a></li> </ul>'
+            html+="<div><img id='captcha_img' src='"+"{{ captcha_img }}"+"' /><a id='sendMail' target='_blank' style='display: none;' href='/admin/sendmail/type/captcha'><button type='button' name='sendMail' class='btn btn-lg btn-primary btn-block form-save-btn input-signin'>sendMail</button></a></div>";
 
             $('#form_captcha').closest('div').before(html);
 
@@ -89,6 +89,18 @@
         $(document).ready(function(){
             scanningLogin();
         });
+
+        function chooseCaptcha(type,o){
+            $(o).closest('li').siblings().removeClass('active');
+            $(o).closest('li').addClass('active');
+            if(parseInt(type)==0){
+                $('#captcha_img').siblings().hide();
+                $('#captcha_img').show();
+            }else{
+                $('#sendMail').siblings().hide();
+                $('#sendMail').show();
+            }
+        }
 
     </script>
 
