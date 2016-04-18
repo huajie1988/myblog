@@ -78,16 +78,16 @@
 
                         <ul class="nav navbar-nav navbar-right">
                             <li>
-                                <form class="navbar-form navbar-left" role="search">
+                                <div class="navbar-form navbar-left" role="search">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Search for...">
+                                        <input type="text" class="form-control"  id="search_input" placeholder="Search for...">
                         <span class="input-group-btn">
-                          <button class="btn btn-default" type="button">
+                          <button class="btn btn-default" type="button" id="search">
                               <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                           </button>
                         </span>
                                     </div><!-- /input-group -->
-                                </form>
+                                </div>
                             </li>
                         </ul>
                     </div><!-- /.navbar-collapse -->
@@ -273,6 +273,21 @@
         }
 
     });
+
+    $('#search').click(function(){
+        var search=$('#search_input').val();
+        if($.trim(search)!='')
+            location.href='/search/mode/'+search;
+    })
+
+    $('#search_input').keypress(function(){
+        if(event.keyCode==13){
+            var search=$('#search_input').val();
+            if($.trim(search)!='')
+                location.href='/search/mode/'+search;
+        }
+
+    })
 
 </script>
 {% endblock %}

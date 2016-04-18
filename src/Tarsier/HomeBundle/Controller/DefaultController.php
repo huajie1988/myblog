@@ -175,6 +175,59 @@ class DefaultController extends Controller
         return $data;
     }
 
+    /**
+     * @Route("/search/mode/{mode}",defaults={"mode":"Do you want search empty?"})
+     * @Method("GET")
+     * @Template()
+     */
+
+    public function searchAction($mode){
+
+        $mode=$this->getRequest()->get('mode');
+        $mode=strip_tags($mode);
+
+        $search_mode_list=$this->dealmodeArgs($mode);
+
+        if(empty($search_mode_list))
+            return $this->redirect('/search/mode');
+
+        if(!empty($search_mode_list['mosquito']))
+            return $this->redirect('/');
+
+        $em=$this->getDoctrine()->getManager();
+
+        $c=new Common();
+        $current_month=$c->getCurrentMonth();
+
+        $em=$this->getDoctrine()->getManager();
+        $tags=$this->getTags($em);
+
+        $page=$this->getRequest()->get("page",1);
+
+        $list_query = $em->getRepository("TarsierHomeBundle:article")->getArticleBySearch($search_mode_list);
+        $paginator  = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $list_query,
+            $page/*page number*/,
+            10/*limit per page*/
+        );
+//        使用原生SQL
+
+//        $list=$this->get("database_connection")->fetchAll("SELECT	a.* FROM	`tags` t LEFT JOIN article_tags at ON t.id=`at`.tags_id LEFT JOIN article a ON a.id=`at`.article_id WHERE t.`name`='$nav_tags';");
+
+        $hot_article = $em->getRepository("TarsierHomeBundle:article")->getHotArticle();
+
+
+        $data=[
+            'nav_tags'=>'',
+            'pagination' => $pagination,
+            'current_month' => $current_month,
+            'tags' => $tags,
+            'hot_article'=>$hot_article,
+            'friendlink'=>$this->getFriendLink(),
+        ];
+        return $data;
+    }
 
     private function setImg($article,$sem){
 
@@ -347,6 +400,53 @@ class DefaultController extends Controller
 
 
         return $flag;
+
+    }
+
+    /*
+     * 日期：2016年4月18日 10:23:42
+     * 作者：Huajie
+     * 备注理由：估摸着效率有些差，待优化
+     */
+    private function dealmodeArgs($mode){
+        $mode=explode(' ',$mode);
+        $mc=0;
+
+        if(!strstr(current($mode),':'))
+            $mode[0]='title:'.current($mode);
+
+        $search_mode_list=['title'=>[],'tags'=>[],'user'=>[],'mosquito'=>[]];
+        $search_mode_where=[];
+        foreach ($mode as $k=>$v) {
+            if(!strstr($v,":")){
+                $mode[$mc].=' '.$v;
+                unset($mode[$k]);
+            }else{
+                $mc=$k;
+            }
+        }
+
+
+        $mode=array_values($mode);
+
+        foreach ($mode as $v) {
+            $tm=explode(':',$v);
+            if(isset($search_mode_list[$tm[0]]))
+                foreach (explode(' ',$tm[1]) as $vv) {
+                    $vv=str_replace(['<','>','～','｀','＄','＾','＋','｜','＝','＜','＞','￥','×',],['<','>','~','`','$','^','+','|','=','<','>','￥','*',],$vv);
+                    $vv=preg_replace("![\\pP+~$`^=]!" , "",$vv);
+                    if(trim($vv)!=''){
+                        $search_mode_list[$tm[0]][]="$tm[0] LIKE '%$vv%'";
+                    }
+                }
+        }
+
+        foreach ($search_mode_list as $k=>$v) {
+            if(empty($v))
+                unset($search_mode_list[$k]);
+        }
+
+        return $search_mode_list;
 
     }
 

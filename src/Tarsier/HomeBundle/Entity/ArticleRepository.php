@@ -60,4 +60,22 @@ class ArticleRepository extends EntityRepository
             ->getArrayResult();
     }
 
+
+    public function getArticleBySearch($mode){
+
+        $where='';
+        $where=['title'=>'a.title','tags'=>'t.name','user'=>'u.username'];
+        foreach ($mode as $k=>$v) {
+            if(!empty($v))
+                $mode[$where[$k]]="(".join(' OR ',str_replace("$k",$where[$k],$v)).")";
+            unset($mode[$k]);
+        }
+
+        $mode=join(" AND ",$mode);
+        $dql="select a,t,u from TarsierHomeBundle:article a LEFT JOIN a.tag t LEFT JOIN a.user u where $mode AND a.status=1 ORDER BY a.sort DESC";
+        $query=$this->getEntityManager()->createQuery($dql);
+
+        return $query;
+    }
+
 }
