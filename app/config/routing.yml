@@ -1,3 +1,13 @@
+tarsier_mosquito:
+    resource: "@TarsierMosquitoBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+tarsier_wx:
+    resource: "@TarsierWxBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 tarsier_admin:
     resource: "@TarsierAdminBundle/Controller/"
     type:     annotation
