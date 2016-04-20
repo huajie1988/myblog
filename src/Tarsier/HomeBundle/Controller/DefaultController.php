@@ -407,46 +407,36 @@ class DefaultController extends Controller
      * 日期：2016年4月18日 10:23:42
      * 作者：Huajie
      * 备注理由：估摸着效率有些差，待优化
+     *
+     * 日期：2016年4月20日 11:43:16
+     * 作者：Huajie
+     * 备注理由：第一次优化
+     *
      */
     private function dealmodeArgs($mode){
-        $mode=explode(' ',$mode);
-        $mc=0;
 
-        if(!strstr(current($mode),':'))
-            $mode[0]='title:'.current($mode);
+        if(!strstr(current(explode(' ',$mode)),':'))
+            $mode='title:'.$mode;
+
+        $mode=preg_replace('!((?:^|\s)(\w+:)|$)!','|$1',$mode);
+        $mode = explode('|',$mode);
+        $mode=array_filter($mode);
 
         $search_mode_list=['title'=>[],'tags'=>[],'user'=>[],'mosquito'=>[]];
-        $search_mode_where=[];
-        foreach ($mode as $k=>$v) {
-            if(!strstr($v,":")){
-                $mode[$mc].=' '.$v;
-                unset($mode[$k]);
-            }else{
-                $mc=$k;
-            }
-        }
-
-
-        $mode=array_values($mode);
 
         foreach ($mode as $v) {
             $tm=explode(':',$v);
-            if(isset($search_mode_list[$tm[0]]))
-                foreach (explode(' ',$tm[1]) as $vv) {
-                    $vv=str_replace(['<','>','～','｀','＄','＾','＋','｜','＝','＜','＞','￥','×',],['<','>','~','`','$','^','+','|','=','<','>','￥','*',],$vv);
-                    $vv=preg_replace("![\\pP+~$`^=]!" , "",$vv);
-                    if(trim($vv)!=''){
-                        $search_mode_list[$tm[0]][]="$tm[0] LIKE '%$vv%'";
-                    }
-                }
+            $tm[0]=trim($tm[0]);
+            $ta=[];
+            if(isset($search_mode_list[$tm[0]])){
+                $vv=str_replace(['<','>','～','｀','＄','＾','＋','｜','＝','＜','＞','￥','×',],['<','>','~','`','$','^','+','|','=','<','>','￥','*',],trim($tm[1]));
+                $vv=preg_replace("![\\pP+~$`^=]!" , "",$vv);
+                $ta=preg_replace('!(?:^|\s)([^\s]+)!'," $tm[0] LIKE '%$1%'",explode(' ',$vv));
+                $search_mode_list[$tm[0]]=array_filter(array_merge($search_mode_list[$tm[0]],$ta));
+            }
         }
 
-        foreach ($search_mode_list as $k=>$v) {
-            if(empty($v))
-                unset($search_mode_list[$k]);
-        }
-
-        return $search_mode_list;
+        return array_filter($search_mode_list);
 
     }
 

@@ -199,9 +199,6 @@ class WxBaseController extends BaseController
         return;
     }
 
-    /**
-     * @brief 文本响应信息模板
-     */
 
     private function weixin_response_text() {
         $time = time ();
@@ -224,9 +221,6 @@ class WxBaseController extends BaseController
         return $resultStr;
     }
 
-    /**
-     * @brief 新闻响应信息模板
-     */
 
     private function weixin_response_article() {
         $time = time ();
