@@ -26,8 +26,8 @@ function codeTranslate(){
 
             if(lang['operate'] && lang['operate']['list']){
                 for(var i=0;i<lang['operate']['list'].length;i++){
-                    var s='\\'+lang['operate']['list'][i];
-                    var reg=new RegExp("\\b(\\s*"+s+"\\s*)\\b","ig");
+                    var s=lang['operate']['list'][i];
+                    var reg=new RegExp("(\\s*"+s+"\\s*)","ig");
                     code=code.replace(reg,'<span data_rep_cls="'+lang['operate']['class']+'">$1</span>')
                 }
             }
