@@ -1,0 +1,18 @@
+.python_keyword{
+    color: orange;
+}
+
+.python_string{
+    color: #3299da;
+    font-weight: bold;
+}
+
+.python_operate{
+    color: #008200;
+    font-weight: bold;
+}
+
+.python_annotation{
+    color: #999999;
+    font-style:italic;
+}

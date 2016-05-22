@@ -38,6 +38,18 @@ assetic:
         glyphicons_halflings_regular_woff2:
           inputs: "@TarsierHomeBundle/Resources/public/fonts/glyphicons-halflings-regular.woff2"
           output: 'fonts/glyphicons-halflings-regular.woff2'
+        sql_lang_js:
+          inputs: "@TarsierHomeBundle/Resources/public/js/codetpl/sql_lang/sql_lang.js"
+          output: 'js/codetpl/sql_lang/sql_lang.js'
+        sql_lang_css:
+          inputs: "@TarsierHomeBundle/Resources/public/js/codetpl/sql_lang/sql_lang.css"
+          output: 'js/codetpl/sql_lang/sql_lang.css'
+        python_lang_js:
+          inputs: "@TarsierHomeBundle/Resources/public/js/codetpl/python_lang/python_lang.js"
+          output: 'js/codetpl/python_lang/python_lang.js'
+        python_lang_css:
+          inputs: "@TarsierHomeBundle/Resources/public/js/codetpl/python_lang/python_lang.css"
+          output: 'js/codetpl/python_lang/python_lang.css'
 
     #java: /usr/bin/java
     filters:

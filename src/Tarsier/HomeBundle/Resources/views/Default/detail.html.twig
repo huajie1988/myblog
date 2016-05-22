@@ -41,7 +41,7 @@
                     </tr>
                </tbody>
             </table>
-            <div class="panel-body">
+            <div class="panel-body" id="content">
                 {{ article.getContent()|raw }}
             </div>
 
@@ -120,7 +120,6 @@
 
 
 
-
 {% block private_js %}
     <script type="text/javascript">
         var rss_news = $('#rss_news').newsTicker({
@@ -128,5 +127,15 @@
             max_rows: 3,
             duration: 4000,
         });
+        $(window).load(function() {
+            codeTranslate();
+        });
+
     </script>
+    {% javascripts
+    '@TarsierHomeBundle/Resources/public/js/codeTranslate.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
 {% endblock %}

@@ -273,7 +273,7 @@ class DefaultController extends Controller
 
     private function getTags($em){
         $tags = $em->createQuery(
-           'SELECT t FROM TarsierHomeBundle:tags t ORDER BY t.click DESC'
+           'SELECT t FROM TarsierHomeBundle:tags t WHERE t.click > 0 ORDER BY t.click DESC'
         )->setMaxResults(20)
         ->getResult();
 

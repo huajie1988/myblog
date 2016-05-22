@@ -1,0 +1,18 @@
+.sql_keyword{
+    color: #0000ff;
+}
+
+.sql_string{
+    color: #B240E2;
+    font-weight: bold;
+}
+
+.sql_operate{
+    color: #008200;
+    font-weight: bold;
+}
+
+.sql_annotation{
+    color: #999999;
+    font-style:italic;
+}
