@@ -50,6 +50,12 @@ assetic:
         python_lang_css:
           inputs: "@TarsierHomeBundle/Resources/public/js/codetpl/python_lang/python_lang.css"
           output: 'js/codetpl/python_lang/python_lang.css'
+        php_lang_js:
+          inputs: "@TarsierHomeBundle/Resources/public/js/codetpl/php_lang/php_lang.js"
+          output: 'js/codetpl/php_lang/php_lang.js'
+        php_lang_css:
+          inputs: "@TarsierHomeBundle/Resources/public/js/codetpl/php_lang/php_lang.css"
+          output: 'js/codetpl/php_lang/php_lang.css'
 
     #java: /usr/bin/java
     filters:

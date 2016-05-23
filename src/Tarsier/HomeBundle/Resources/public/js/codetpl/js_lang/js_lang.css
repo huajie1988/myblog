@@ -1,0 +1,18 @@
+.js_keyword{
+    color: orange;
+}
+
+.js_string{
+    color: #3299da;
+    font-weight: bold;
+}
+
+.js_operate{
+    color: #008200;
+    font-weight: bold;
+}
+
+.js_annotation{
+    color: #999999;
+    font-style:italic;
+}

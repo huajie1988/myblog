@@ -1,0 +1,18 @@
+.cpp_keyword{
+    color: orange;
+}
+
+.cpp_string{
+    color: #3299da;
+    font-weight: bold;
+}
+
+.cpp_operate{
+    color: #008200;
+    font-weight: bold;
+}
+
+.cpp_annotation{
+    color: #999999;
+    font-style:italic;
+}

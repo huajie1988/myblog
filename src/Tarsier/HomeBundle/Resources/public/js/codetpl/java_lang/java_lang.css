@@ -1,0 +1,18 @@
+.java_keyword{
+    color: orange;
+}
+
+.java_string{
+    color: #3299da;
+    font-weight: bold;
+}
+
+.java_operate{
+    color: #008200;
+    font-weight: bold;
+}
+
+.java_annotation{
+    color: #999999;
+    font-style:italic;
+}

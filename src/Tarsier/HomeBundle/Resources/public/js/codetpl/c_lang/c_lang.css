@@ -1,0 +1,18 @@
+.c_keyword{
+    color: orange;
+}
+
+.c_string{
+    color: #3299da;
+    font-weight: bold;
+}
+
+.c_operate{
+    color: #008200;
+    font-weight: bold;
+}
+
+.c_annotation{
+    color: #999999;
+    font-style:italic;
+}

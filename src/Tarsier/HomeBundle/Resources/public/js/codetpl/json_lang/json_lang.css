@@ -1,0 +1,18 @@
+.json_keyword{
+    color: orange;
+}
+
+.json_string{
+    color: #3299da;
+    font-weight: bold;
+}
+
+.json_operate{
+    color: #008200;
+    font-weight: bold;
+}
+
+.json_annotation{
+    color: #999999;
+    font-style:italic;
+}

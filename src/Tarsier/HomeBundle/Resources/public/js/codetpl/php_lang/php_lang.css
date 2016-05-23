@@ -1,0 +1,18 @@
+.php_keyword{
+    color: orange;
+}
+
+.php_string{
+    color: #3299da;
+    font-weight: bold;
+}
+
+.php_operate{
+    color: #008200;
+    font-weight: bold;
+}
+
+.php_annotation{
+    color: #999999;
+    font-style:italic;
+}
