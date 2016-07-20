@@ -1,6 +1,7 @@
 
 $('#content').find('pre').each(function(i,e) {
     var cls = $(e).attr('class')
+    if (cls==undefined || cls==null) { return false;}
     if($('script[src="/js/codetpl/'+cls+'_lang/'+cls+'_lang.js"]').length<=0)
         $('body').append('<script src="/js/codetpl/'+cls+'_lang/'+cls+'_lang.js"></script>')
     if($('link[href="/js/codetpl/'+cls+'_lang/'+cls+'_lang.css"]').length<=0)
@@ -10,9 +11,10 @@ $('#content').find('pre').each(function(i,e) {
 function codeTranslate(){
     $('#content').find('pre').each(function(i,e){
         var cls=$(e).attr('class')
-        var lang=eval(cls+"_lang")
-        if(cls!=undefined && lang){
+        
+        if(cls!=undefined){
             var code=$(e).text();
+            var lang=eval(cls+"_lang");
 
 
             if(lang['string'] && lang['string']['list']){
