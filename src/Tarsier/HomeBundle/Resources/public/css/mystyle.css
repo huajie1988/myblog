@@ -118,3 +118,7 @@
 .thumb_min_height{
     min-height: 380px;
 }
+
+.thumb_min_width{
+    min-width: 166px;
+}

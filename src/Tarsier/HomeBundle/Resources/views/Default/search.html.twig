@@ -1,4 +1,9 @@
 {% extends "TarsierHomeBundle::layout.html.twig" %}
+
+{% block title %}
+    <title>Search List In KumaCore|熊心</title>
+{% endblock %}
+
 {% block main %}
     <div  class="col-md-9">
         <div class="panel panel-default">
@@ -31,7 +36,7 @@
         <div class="media panel panel-default" data-article-id="{{ article.id }}">
             <div class="media-left media-middle media-list">
                 <a href="/detail/id/{{ article.id }}">
-                    <img class="media-object" data-src="holder.js/172x128" alt="172x128" src="" data-holder-rendered="true">
+                    <img class="media-object thumb_min_width" data-src="holder.js/172x128" alt="172x128" src="" data-holder-rendered="true">
                 </a>
             </div>
             <div class="media-body">
